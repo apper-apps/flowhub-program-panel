@@ -55,41 +55,39 @@ const Dashboard = () => {
     }
     
     return filtered;
-  }, [allActivities, startDate, endDate]);
-
-  useEffect(() => {
+}, [allActivities, startDate, endDate]);
 
   const handleAddContact = async (contactData) => {
     try {
-      const newContact = await contactService.create(contactData)
-      setContacts(prev => [...prev, newContact])
-      setShowContactModal(false)
-      toast.success('Contact added successfully!')
+      const newContact = await contactService.create(contactData);
+      setContacts(prev => [...prev, newContact]);
+      setShowContactModal(false);
+      toast.success('Contact added successfully!');
       
       // Reload dashboard data to update stats
-      await loadDashboardData()
+      await loadDashboardData();
     } catch (error) {
-      toast.error('Failed to add contact. Please try again.')
-      throw error
+      toast.error('Failed to add contact. Please try again.');
+      throw error;
     }
-  }
+  };
 
   const handleAddCompany = async (companyData) => {
     try {
-      const newCompany = await companyService.create(companyData)
-      setCompanies(prev => [...prev, newCompany])
-      setShowCompanyModal(false)
-      toast.success('Company added successfully!')
+      const newCompany = await companyService.create(companyData);
+      setCompanies(prev => [...prev, newCompany]);
+      setShowCompanyModal(false);
+      toast.success('Company added successfully!');
       
       // Reload dashboard data to update stats
-      await loadDashboardData()
+      await loadDashboardData();
     } catch (error) {
-      toast.error('Failed to add company. Please try again.')
-      throw error
+      toast.error('Failed to add company. Please try again.');
+      throw error;
     }
-  }
+  };
 
-const loadDashboardData = async () => {
+  const loadDashboardData = async () => {
     try {
       setLoading(true);
       setError(null);
