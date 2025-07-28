@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { contactService } from "@/services/api/contactService";
 import { companyService } from "@/services/api/companyService";
+import { taskService } from "@/services/api/taskService";
 import { create, getAll } from "@/services/api/dealService";
 import { activityService } from "@/services/api/activityService";
 import ApperIcon from "@/components/ApperIcon";
@@ -15,16 +16,30 @@ import Companies from "@/pages/Companies";
 import Contacts from "@/pages/Contacts";
 
 const Dashboard = () => {
-  const [stats, setStats] = useState({
+const [stats, setStats] = useState({
     totalContacts: 0,
     totalCompanies: 0,
+    totalTasks: 0,
+    totalDeals: 0,
     recentContactsCount: 0,
     contactsByStatus: {
       Lead: 0,
       Prospect: 0,
       Customer: 0,
       Closed: 0
-    }
+    },
+    tasksByStatus: {
+      Pending: 0,
+      Completed: 0
+    },
+    dealsByStage: {
+      Prospecting: 0,
+      Proposal: 0,
+      Negotiation: 0,
+      'Closed Won': 0,
+      'Closed Lost': 0
+    },
+    recentDealsValue: 0
   });
   const [contacts, setContacts] = useState([]);
   const [companies, setCompanies] = useState([]);
@@ -96,9 +111,11 @@ const loadDashboardData = async () => {
       setLoading(true);
       setError(null);
       
-      const [contacts, companies, activities] = await Promise.all([
+      const [contacts, companies, tasks, deals, activities] = await Promise.all([
         contactService.getAll(),
         companyService.getAll(),
+        taskService.getAll(),
+        getAll(), // deals
         activityService.getAll()
       ]);
       
@@ -116,17 +133,53 @@ const loadDashboardData = async () => {
         acc[status] = (acc[status] || 0) + 1;
         return acc;
       }, {});
+
+      // Calculate tasks by status
+      const taskStatusBreakdown = (tasks || []).reduce((acc, task) => {
+        const status = task.status || 'Pending';
+        acc[status] = (acc[status] || 0) + 1;
+        return acc;
+      }, {});
+
+      // Calculate deals by stage
+      const dealStageBreakdown = (deals || []).reduce((acc, deal) => {
+        const stage = deal.stage || 'Prospecting';
+        acc[stage] = (acc[stage] || 0) + 1;
+        return acc;
+      }, {});
+
+      // Calculate recent deals value (last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const recentDealsValue = (deals || [])
+        .filter(deal => new Date(deal.createdAt) > thirtyDaysAgo)
+        .reduce((sum, deal) => sum + (parseFloat(deal.value) || 0), 0);
       
       setStats({
         totalContacts: (contacts || []).length,
         totalCompanies: (companies || []).length,
+        totalTasks: (tasks || []).length,
+        totalDeals: (deals || []).length,
         recentContactsCount: recentContacts.length,
         contactsByStatus: {
           Lead: statusBreakdown.Lead || 0,
           Prospect: statusBreakdown.Prospect || 0,
           Customer: statusBreakdown.Customer || 0,
           Closed: statusBreakdown.Closed || 0
-        }
+        },
+        tasksByStatus: {
+          Pending: taskStatusBreakdown.Pending || 0,
+          Completed: taskStatusBreakdown.Completed || 0
+        },
+        dealsByStage: {
+          Prospecting: dealStageBreakdown.Prospecting || 0,
+          Proposal: dealStageBreakdown.Proposal || 0,
+          Negotiation: dealStageBreakdown.Negotiation || 0,
+          'Closed Won': dealStageBreakdown['Closed Won'] || 0,
+          'Closed Lost': dealStageBreakdown['Closed Lost'] || 0
+        },
+        recentDealsValue
       });
 
       setAllActivities(activities || []);
@@ -183,7 +236,7 @@ if (error) {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Total Contacts"
           value={stats.totalContacts}
@@ -201,22 +254,22 @@ if (error) {
         />
         
         <StatsCard
-          title="Recent Activities"
-          value={filteredActivities.length}
-          icon="Activity"
+          title="Active Tasks"
+          value={stats.totalTasks}
+          icon="CheckSquare"
           trend={{
-            type: "neutral",
-            value: startDate || endDate ? "Filtered results" : "Last 10 activities"
+            type: stats.tasksByStatus.Completed > stats.tasksByStatus.Pending ? "up" : "neutral",
+            value: `${stats.tasksByStatus.Completed} completed`
           }}
         />
 
         <StatsCard
-          title="Active Leads"
-          value={stats.contactsByStatus.Lead}
-          icon="Target"
+          title="Pipeline Value"
+          value={`$${(stats.recentDealsValue || 0).toLocaleString()}`}
+          icon="DollarSign"
           trend={{
-            type: "neutral",
-            value: "Potential customers"
+            type: stats.recentDealsValue > 0 ? "up" : "neutral",
+            value: "Last 30 days"
           }}
         />
       </div>
