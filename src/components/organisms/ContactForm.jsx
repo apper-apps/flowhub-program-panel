@@ -86,109 +86,113 @@ await onSubmit({
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <Input
-        label="Full Name"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        error={errors.name}
-        placeholder="Enter contact's full name"
-        required
-      />
-      
-      <Input
-        label="Email Address"
-        name="email"
-        type="email"
-        value={formData.email}
-        onChange={handleChange}
-        error={errors.email}
-        placeholder="Enter email address"
-        required
-      />
-      
-      <Input
-        label="Phone Number"
-        name="phone"
-        type="tel"
-        value={formData.phone}
-        onChange={handleChange}
-        error={errors.phone}
-        placeholder="Enter phone number"
-        required
-      />
-      
-<Input
-        label="Job Title (Optional)"
-        name="jobTitle"
-        value={formData.jobTitle}
-        onChange={handleChange}
-        placeholder="e.g. Software Engineer, Marketing Manager"
-      />
+return (
+    <div className="p-6 bg-gray-50/50 rounded-lg border border-gray-100">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="space-y-6">
+          <Input
+            label="Full Name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            error={errors.name}
+            placeholder="Enter contact's full name"
+            required
+          />
+          
+          <Input
+            label="Email Address"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            error={errors.email}
+            placeholder="Enter email address"
+            required
+          />
+          
+          <Input
+            label="Phone Number"
+            name="phone"
+            type="tel"
+            value={formData.phone}
+            onChange={handleChange}
+            error={errors.phone}
+            placeholder="Enter phone number"
+            required
+          />
+          
+          <Input
+            label="Job Title (Optional)"
+            name="jobTitle"
+            value={formData.jobTitle}
+            onChange={handleChange}
+            placeholder="e.g. Software Engineer, Marketing Manager"
+          />
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Notes (Optional)
-        </label>
-        <textarea
-          name="notes"
-          value={formData.notes}
-          onChange={handleChange}
-          placeholder="Additional notes about this contact..."
-          rows={3}
-className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-sm transition-all duration-300 resize-none"
-        />
-      </div>
+          <div className="space-y-3 p-4 bg-white/70 rounded-lg border border-gray-200/50">
+            <label className="block text-sm font-medium text-gray-800">
+              Notes (Optional)
+            </label>
+            <textarea
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
+              placeholder="Additional notes about this contact..."
+              rows={4}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white text-gray-900 placeholder-gray-500 hover:bg-gray-50 hover:shadow-sm transition-all duration-300 resize-none"
+            />
+          </div>
 
-      {companies.length > 0 && (
-        <Select
-          label="Company (Optional)"
-          name="companyId"
-          value={formData.companyId}
-          onChange={handleChange}
-        >
-          <option value="">Select a company</option>
-          {companies.map((company) => (
-            <option key={company.Id} value={company.Id}>
-              {company.name}
-            </option>
-          ))}
-        </Select>
-      )}
-      
-<div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-6 border-t border-gray-200/50">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onCancel}
-          disabled={isSubmitting}
-          className="w-full sm:w-auto min-h-[44px] order-2 sm:order-1 hover:shadow-md"
-        >
-          Cancel
-        </Button>
-        
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={isSubmitting}
-          className="w-full sm:w-auto min-w-[120px] min-h-[44px] order-1 sm:order-2 shadow-lg hover:shadow-xl"
-        >
-          {isSubmitting ? (
-            <>
-              <ApperIcon name="Loader2" size={16} className="mr-2 animate-spin" />
-              {contact ? "Updating..." : "Adding..."}
-            </>
-          ) : (
-            <>
-              <ApperIcon name={contact ? "Save" : "Plus"} size={16} className="mr-2" />
-              {contact ? "Update Contact" : "Add Contact"}
-            </>
+          {companies.length > 0 && (
+            <Select
+              label="Company (Optional)"
+              name="companyId"
+              value={formData.companyId}
+              onChange={handleChange}
+            >
+              <option value="">Select a company</option>
+              {companies.map((company) => (
+                <option key={company.Id} value={company.Id}>
+                  {company.name}
+                </option>
+              ))}
+            </Select>
           )}
-        </Button>
-      </div>
-    </form>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row items-center justify-end gap-4 pt-8 mt-8 border-t border-gray-300/60 bg-white/50 -mx-6 px-6 py-6 rounded-b-lg">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            className="w-full sm:w-auto min-h-[44px] order-2 sm:order-1 hover:shadow-md px-6"
+          >
+            Cancel
+          </Button>
+          
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={isSubmitting}
+            className="w-full sm:w-auto min-w-[140px] min-h-[44px] order-1 sm:order-2 shadow-lg hover:shadow-xl px-6"
+          >
+            {isSubmitting ? (
+              <>
+                <ApperIcon name="Loader2" size={16} className="mr-2 animate-spin" />
+                {contact ? "Updating..." : "Adding..."}
+              </>
+            ) : (
+              <>
+                <ApperIcon name={contact ? "Save" : "Plus"} size={16} className="mr-2" />
+                {contact ? "Update Contact" : "Add Contact"}
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 };
 export default ContactForm;

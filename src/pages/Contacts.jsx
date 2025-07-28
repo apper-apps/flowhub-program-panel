@@ -100,11 +100,12 @@ const handleAddContact = async (contactData) => {
         onExportContacts={handleExportContacts}
       />
 
-      <Modal
+<Modal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         title="Add New Contact"
-        size="md"
+        size="lg"
+        scrollable
       >
         <ContactForm
           companies={companies}
