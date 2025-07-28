@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 import { contactService } from "@/services/api/contactService";
 import { companyService } from "@/services/api/companyService";
 import Modal from "@/components/molecules/Modal";
