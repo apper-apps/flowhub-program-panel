@@ -1,5 +1,7 @@
-import mockDeals from '@/services/mockData/deals.json';
-import { toast } from 'react-toastify';
+import mockDeals from "@/services/mockData/deals.json";
+import { toast } from "react-toastify";
+import React from "react";
+import Error from "@/components/ui/Error";
 
 let deals = [...mockDeals];
 let nextId = Math.max(...deals.map(d => d.Id)) + 1;
@@ -105,8 +107,30 @@ export const getStats = () => {
     proposal: deals.filter(d => d.stage === 'Proposal').length,
     negotiation: deals.filter(d => d.stage === 'Negotiation').length,
     closedWon: deals.filter(d => d.stage === 'Closed Won').length,
-    closedLost: deals.filter(d => d.stage === 'Closed Lost').length,
+closedLost: deals.filter(d => d.stage === 'Closed Lost').length,
     totalValue: deals.reduce((sum, d) => sum + d.value, 0),
     avgValue: deals.length > 0 ? deals.reduce((sum, d) => sum + d.value, 0) / deals.length : 0
   };
+};
+
+// Update deal stage (for kanban drag and drop)
+export const updateStage = (id, newStage) => {
+  const dealId = parseInt(id);
+  if (isNaN(dealId)) {
+    throw new Error('Invalid deal ID');
+  }
+  
+  const index = deals.findIndex(d => d.Id === dealId);
+  if (index === -1) {
+    throw new Error('Deal not found');
+  }
+  
+  const updatedDeal = {
+    ...deals[index],
+    stage: newStage,
+    updatedAt: new Date().toISOString()
+  };
+  
+  deals[index] = updatedDeal;
+  return { ...updatedDeal };
 };

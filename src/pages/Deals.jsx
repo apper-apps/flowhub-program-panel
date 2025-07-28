@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { toast } from 'react-toastify';
 import * as dealService from '@/services/api/dealService';
 import { contactService } from '@/services/api/contactService';
@@ -15,7 +16,7 @@ import ApperIcon from '@/components/ApperIcon';
 import { cn } from '@/utils/cn';
 
 const Deals = () => {
-  const [deals, setDeals] = useState([]);
+const [deals, setDeals] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,7 @@ const Deals = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingDeal, setEditingDeal] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [viewMode, setViewMode] = useState('kanban');
 
   const stageOptions = [
     { value: '', label: 'All Stages' },
@@ -72,7 +74,7 @@ const [dealsData, contactsData, companiesData] = await Promise.all([
     }
   };
 
-  const filteredAndSortedDeals = useMemo(() => {
+const filteredAndSortedDeals = useMemo(() => {
     let filtered = deals.filter(deal => {
       const matchesSearch = deal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            (deal.notes && deal.notes.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -105,7 +107,18 @@ const [dealsData, contactsData, companiesData] = await Promise.all([
     });
   }, [deals, searchQuery, stageFilter, companyFilter, sortBy, sortOrder]);
 
-  const handleCreateDeal = () => {
+  const dealsByStage = useMemo(() => {
+    const stages = ['Prospecting', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+    const stageGroups = {};
+    
+    stages.forEach(stage => {
+      stageGroups[stage] = filteredAndSortedDeals.filter(deal => deal.stage === stage);
+    });
+    
+    return stageGroups;
+  }, [filteredAndSortedDeals]);
+
+const handleCreateDeal = () => {
     setEditingDeal(null);
     setShowModal(true);
   };
@@ -147,6 +160,25 @@ const [dealsData, contactsData, companiesData] = await Promise.all([
     }
   };
 
+  const handleDragEnd = async (result) => {
+    if (!result.destination) return;
+    
+    const { source, destination, draggableId } = result;
+    
+    if (source.droppableId === destination.droppableId) return;
+    
+    const dealId = parseInt(draggableId);
+    const newStage = destination.droppableId;
+    
+    try {
+      const updatedDeal = await dealService.updateStage(dealId, newStage);
+      setDeals(deals.map(d => d.Id === dealId ? updatedDeal : d));
+      toast.success(`Deal moved to ${newStage}`);
+    } catch (err) {
+      toast.error('Failed to update deal stage');
+    }
+  };
+
   const getContactName = (contactId) => {
     const contact = contacts.find(c => c.Id === contactId);
     return contact ? contact.name : 'Unknown Contact';
@@ -157,16 +189,146 @@ const [dealsData, contactsData, companiesData] = await Promise.all([
     return company ? company.name : 'No Company';
   };
 
-  const getStageColor = (stage) => {
+const getStageColor = (stage) => {
     const colors = {
-      'Prospecting': 'bg-blue-100 text-blue-800',
-      'Proposal': 'bg-yellow-100 text-yellow-800',
-      'Negotiation': 'bg-orange-100 text-orange-800',
-      'Closed Won': 'bg-green-100 text-green-800',
-      'Closed Lost': 'bg-red-100 text-red-800'
+      'Prospecting': 'bg-blue-100 text-blue-800 border-blue-200',
+      'Proposal': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      'Negotiation': 'bg-orange-100 text-orange-800 border-orange-200',
+      'Closed Won': 'bg-green-100 text-green-800 border-green-200',
+      'Closed Lost': 'bg-red-100 text-red-800 border-red-200'
     };
-    return colors[stage] || 'bg-gray-100 text-gray-800';
+    return colors[stage] || 'bg-gray-100 text-gray-800 border-gray-200';
   };
+
+  const getStageHeaderColor = (stage) => {
+    const colors = {
+      'Prospecting': 'bg-blue-50 border-blue-200',
+      'Proposal': 'bg-yellow-50 border-yellow-200',
+      'Negotiation': 'bg-orange-50 border-orange-200',
+      'Closed Won': 'bg-green-50 border-green-200',
+      'Closed Lost': 'bg-red-50 border-red-200'
+    };
+    return colors[stage] || 'bg-gray-50 border-gray-200';
+  };
+
+  const DealCard = ({ deal, index }) => (
+    <Draggable draggableId={deal.Id.toString()} index={index}>
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          className={cn(
+            "bg-white rounded-lg border border-gray-200 p-4 mb-3 cursor-grab transition-all duration-200 hover:shadow-md",
+            snapshot.isDragging && "shadow-lg rotate-2 scale-105"
+          )}
+        >
+          <div className="flex items-start justify-between mb-2">
+            <h3 className="font-medium text-gray-900 text-sm leading-tight">{deal.name}</h3>
+            <div className="flex space-x-1 ml-2 flex-shrink-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditDeal(deal);
+                }}
+                className="p-1 h-6 w-6"
+              >
+                <ApperIcon name="Edit2" size={12} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteDeal(deal);
+                }}
+                className="p-1 h-6 w-6 text-red-600 hover:text-red-700"
+              >
+                <ApperIcon name="Trash2" size={12} />
+              </Button>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-lg font-semibold text-green-600">
+                {formatCurrency(deal.value)}
+              </span>
+            </div>
+            
+            {deal.contactId && (
+              <div className="flex items-center text-xs text-gray-600">
+                <ApperIcon name="User" size={12} className="mr-1" />
+                {getContactName(deal.contactId)}
+              </div>
+            )}
+            
+            {deal.companyId && (
+              <div className="flex items-center text-xs text-gray-600">
+                <ApperIcon name="Building2" size={12} className="mr-1" />
+                {getCompanyName(deal.companyId)}
+              </div>
+            )}
+            
+            {deal.expectedCloseDate && (
+              <div className="flex items-center text-xs text-gray-600">
+                <ApperIcon name="Calendar" size={12} className="mr-1" />
+                {formatDate(deal.expectedCloseDate)}
+              </div>
+            )}
+            
+            {deal.notes && (
+              <p className="text-xs text-gray-500 line-clamp-2 mt-2">
+                {deal.notes}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+    </Draggable>
+  );
+
+  const KanbanColumn = ({ stage, deals: stageDeals }) => (
+    <div className="flex-shrink-0 w-80">
+      <div className={cn("rounded-lg border-2 h-full", getStageHeaderColor(stage))}>
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900">{stage}</h2>
+            <span className="bg-white px-2 py-1 rounded-full text-xs font-medium text-gray-600">
+              {stageDeals.length}
+            </span>
+          </div>
+        </div>
+        
+        <Droppable droppableId={stage}>
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className={cn(
+                "p-4 min-h-96 transition-colors duration-200",
+                snapshot.isDraggingOver && "bg-blue-50"
+              )}
+            >
+              {stageDeals.map((deal, index) => (
+                <DealCard key={deal.Id} deal={deal} index={index} />
+              ))}
+              {provided.placeholder}
+              
+              {stageDeals.length === 0 && (
+                <div className="text-center py-8">
+                  <ApperIcon name="Package" size={32} className="mx-auto text-gray-300 mb-2" />
+                  <p className="text-sm text-gray-500">No deals in {stage.toLowerCase()}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </Droppable>
+      </div>
+    </div>
+  );
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
@@ -187,23 +349,25 @@ const [dealsData, contactsData, companiesData] = await Promise.all([
   if (loading) return <Loading />;
   if (error) return <Error message={error} onRetry={loadData} />;
 
-  return (
+return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Deals</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Deals Pipeline</h1>
           <p className="text-gray-600">Manage your sales pipeline and track opportunities</p>
         </div>
-        <Button onClick={handleCreateDeal} className="w-full sm:w-auto">
-          <ApperIcon name="Plus" size={20} />
-          Add Deal
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleCreateDeal} className="w-full sm:w-auto">
+            <ApperIcon name="Plus" size={20} />
+            Add Deal
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="lg:col-span-2">
             <SearchInput
               placeholder="Search deals..."
@@ -229,26 +393,10 @@ const [dealsData, contactsData, companiesData] = await Promise.all([
             ]}
             placeholder="Filter by company"
           />
-          <div className="flex gap-2">
-            <Select
-              value={sortBy}
-              onChange={setSortBy}
-              options={sortOptions}
-              placeholder="Sort by"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="px-3"
-            >
-              <ApperIcon name={sortOrder === 'asc' ? 'ArrowUp' : 'ArrowDown'} size={16} />
-            </Button>
-          </div>
         </div>
       </div>
 
-      {/* Deals List */}
+      {/* Kanban Board */}
       {filteredAndSortedDeals.length === 0 ? (
         <Empty
           icon="Handshake"
@@ -260,100 +408,19 @@ const [dealsData, contactsData, companiesData] = await Promise.all([
           } : undefined}
         />
       ) : (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Deal
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Value
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stage
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contact
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Company
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Close Date
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredAndSortedDeals.map((deal) => (
-                  <tr key={deal.Id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{deal.name}</div>
-                        {deal.notes && (
-                          <div className="text-sm text-gray-500 truncate max-w-xs">
-                            {deal.notes}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {formatCurrency(deal.value)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={cn(
-                        "inline-flex px-2 py-1 text-xs font-semibold rounded-full",
-                        getStageColor(deal.stage)
-                      )}>
-                        {deal.stage}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {getContactName(deal.contactId)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {getCompanyName(deal.companyId)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {formatDate(deal.expectedCloseDate)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center justify-end space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditDeal(deal)}
-                        >
-                          <ApperIcon name="Edit2" size={16} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteDeal(deal)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <ApperIcon name="Trash2" size={16} />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <div className="overflow-x-auto pb-4">
+            <div className="flex gap-6 min-w-max">
+              {['Prospecting', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'].map(stage => (
+                <KanbanColumn
+                  key={stage}
+                  stage={stage}
+                  deals={dealsByStage[stage] || []}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        </DragDropContext>
       )}
 
       {/* Deal Form Modal */}
