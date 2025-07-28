@@ -204,10 +204,11 @@ const getContactName = (contactId) => {
     const contact = contacts.find(c => c.Id === contactId);
     return contact ? contact.name : 'Unknown Contact';
   };
-
-  const getCompanyName = (companyId) => {
+const getCompanyName = (companyId) => {
     const company = companies.find(c => c.Id === companyId);
-    return company ? company.name : 'No Company';
+    if (!company) return 'No Company';
+    // Handle both lookup object structure {Id, Name} and direct name access
+    return company.Name || company.name || 'No Company';
   };
 
   const handleExportDeals = () => {
@@ -421,10 +422,10 @@ return (
               value={companyFilter}
               onChange={setCompanyFilter}
               options={[
-                { value: '', label: 'All Companies' },
+{ value: '', label: 'All Companies' },
                 ...companies.map(company => ({
                   value: company.Id.toString(),
-                  label: company.name
+                  label: company.Name || company.name || `Company ${company.Id}`
                 }))
               ]}
               placeholder="Filter by company"
