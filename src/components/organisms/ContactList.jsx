@@ -26,11 +26,13 @@ const filteredContacts = useMemo(() => {
     // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(contact => 
-        contact.name.toLowerCase().includes(query) ||
-        contact.email.toLowerCase().includes(query) ||
-        contact.phone.includes(query)
-      );
+      filtered = filtered.filter(contact => {
+        const companyName = getCompanyName(contact.companyId).toLowerCase();
+        return contact.name.toLowerCase().includes(query) ||
+               contact.email.toLowerCase().includes(query) ||
+               contact.phone.includes(query) ||
+               companyName.includes(query);
+      });
     }
     
     // Filter by status
@@ -39,7 +41,7 @@ const filteredContacts = useMemo(() => {
     }
     
     return filtered;
-  }, [contacts, searchQuery, statusFilter]);
+  }, [contacts, searchQuery, statusFilter, companies]);
 
   const statusOptions = [
     { value: "", label: "All Statuses" },
