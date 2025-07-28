@@ -84,8 +84,18 @@ const filteredContacts = useMemo(() => {
   };
 
 const getCompanyName = (companyId) => {
-    const company = companies.find(c => c.Id === companyId);
-    return company ? company.Name : "—";
+    // Handle lookup objects returned from Apper API
+    if (companyId && typeof companyId === 'object' && companyId.Name) {
+      return companyId.Name;
+    }
+    
+    // Handle numeric ID by finding in companies array
+    if (companyId && typeof companyId === 'number') {
+      const company = companies.find(c => c.Id === companyId);
+      return company ? company.Name : "—";
+    }
+    
+    return "—";
   };
   if (loading) {
     return <Loading variant="table" />;
