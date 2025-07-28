@@ -22,7 +22,7 @@ export const contactService = {
   async create(contactData) {
     await delay(400);
     
-    const maxId = contacts.length > 0 ? Math.max(...contacts.map(c => c.Id)) : 0;
+const maxId = contacts.length > 0 ? Math.max(...contacts.map(c => c.Id)) : 0;
     const newContact = {
       Id: maxId + 1,
       name: contactData.name || "",
@@ -30,6 +30,7 @@ export const contactService = {
       phone: contactData.phone || "",
       jobTitle: contactData.jobTitle || "",
       notes: contactData.notes || "",
+      status: contactData.status || "Lead",
       companyId: contactData.companyId ? parseInt(contactData.companyId) : null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -47,13 +48,14 @@ export const contactService = {
       throw new Error("Contact not found");
     }
     
-    contacts[index] = {
+contacts[index] = {
       ...contacts[index],
       name: updateData.name || contacts[index].name,
       email: updateData.email || contacts[index].email,
       phone: updateData.phone || contacts[index].phone,
       jobTitle: updateData.jobTitle || contacts[index].jobTitle,
       notes: updateData.notes || contacts[index].notes,
+      status: updateData.status || contacts[index].status,
       companyId: updateData.companyId ? parseInt(updateData.companyId) : null,
       Id: parseInt(id),
       updatedAt: new Date().toISOString()

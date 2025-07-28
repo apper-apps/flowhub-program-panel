@@ -1,11 +1,13 @@
-import React, { useState, useMemo } from "react";
-import SearchInput from "@/components/atoms/SearchInput";
-import Button from "@/components/atoms/Button";
+import React, { useMemo, useState } from "react";
 import ApperIcon from "@/components/ApperIcon";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
-
+import Button from "@/components/atoms/Button";
+import Select from "@/components/atoms/Select";
+import SearchInput from "@/components/atoms/SearchInput";
+import Contacts from "@/pages/Contacts";
+import { cn } from "@/utils/cn";
 const ContactList = ({ 
   contacts = [], 
   companies = [],
@@ -15,18 +17,52 @@ const ContactList = ({
   onAddContact,
   onContactSelect 
 }) => {
-  const [searchQuery, setSearchQuery] = useState("");
+const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
-  const filteredContacts = useMemo(() => {
-    if (!searchQuery.trim()) return contacts;
+const filteredContacts = useMemo(() => {
+    let filtered = contacts;
     
-    const query = searchQuery.toLowerCase();
-    return contacts.filter(contact => 
-      contact.name.toLowerCase().includes(query) ||
-      contact.email.toLowerCase().includes(query) ||
-      contact.phone.includes(query)
-    );
-  }, [contacts, searchQuery]);
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(contact => 
+        contact.name.toLowerCase().includes(query) ||
+        contact.email.toLowerCase().includes(query) ||
+        contact.phone.includes(query)
+      );
+    }
+    
+    // Filter by status
+    if (statusFilter) {
+      filtered = filtered.filter(contact => contact.status === statusFilter);
+    }
+    
+    return filtered;
+  }, [contacts, searchQuery, statusFilter]);
+
+  const statusOptions = [
+    { value: "", label: "All Statuses" },
+    { value: "Lead", label: "Lead" },
+    { value: "Prospect", label: "Prospect" },
+    { value: "Customer", label: "Customer" },
+    { value: "Lost", label: "Lost" }
+  ];
+
+  const getStatusBadgeColor = (status) => {
+    switch (status) {
+      case "Lead":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "Prospect":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "Customer":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "Lost":
+        return "bg-red-100 text-red-800 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
 
   const getCompanyName = (companyId) => {
     const company = companies.find(c => c.Id === companyId);
@@ -74,13 +110,26 @@ const ContactList = ({
         </Button>
       </div>
 
-      {/* Search */}
-      <div className="w-full max-w-md">
-        <SearchInput
-          placeholder="Search contacts..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+{/* Search and Filters */}
+      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-2xl">
+        <div className="flex-1">
+          <SearchInput
+            placeholder="Search contacts..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="w-full sm:w-48">
+          <Select
+            placeholder="Filter by status..."
+            options={statusOptions}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          />
+        </div>
+      </div>
+      {/* Add Contact Button */}
+      <div className="flex-shrink-0">
       </div>
 
       {/* Results count */}
@@ -115,6 +164,9 @@ const ContactList = ({
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Company
+</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
                   </th>
                 </tr>
               </thead>
@@ -147,10 +199,18 @@ const ContactList = ({
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-900">{contact.phone}</div>
                     </td>
-                    <td className="px-6 py-4">
+<td className="px-6 py-4">
                       <div className="text-sm text-gray-600">
                         {getCompanyName(contact.companyId)}
                       </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={cn(
+                        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
+                        getStatusBadgeColor(contact.status)
+                      )}>
+                        {contact.status}
+                      </span>
                     </td>
                   </tr>
                 ))}

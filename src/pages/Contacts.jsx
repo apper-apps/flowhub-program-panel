@@ -5,7 +5,6 @@ import ContactDetail from "@/components/organisms/ContactDetail";
 import Modal from "@/components/molecules/Modal";
 import { contactService } from "@/services/api/contactService";
 import { companyService } from "@/services/api/companyService";
-
 const Contacts = () => {
   const [contacts, setContacts] = useState([]);
   const [companies, setCompanies] = useState([]);
