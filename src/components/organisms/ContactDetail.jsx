@@ -9,6 +9,12 @@ const ContactDetail = ({ contact, companies = [], onUpdate, onDelete, onClose })
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [activeTab, setActiveTab] = useState('details');
+  const [activities, setActivities] = useState([]);
+  const [isActivitiesLoading, setIsActivitiesLoading] = useState(false);
+  const [isActivityFormOpen, setIsActivityFormOpen] = useState(false);
+  const [editingActivity, setEditingActivity] = useState(null);
+  const [isActivitySaving, setIsActivitySaving] = useState(false);
   const [formData, setFormData] = useState({
     name: contact.name || "",
     email: contact.email || "",
@@ -64,7 +70,7 @@ const ContactDetail = ({ contact, companies = [], onUpdate, onDelete, onClose })
     }
   };
 
-  const handleCancel = () => {
+const handleCancel = () => {
     setFormData({
       name: contact.name || "",
       email: contact.email || "",
@@ -75,6 +81,68 @@ const ContactDetail = ({ contact, companies = [], onUpdate, onDelete, onClose })
     });
     setIsEditing(false);
   };
+
+  // Activity management functions
+  const loadActivities = async () => {
+    setIsActivitiesLoading(true);
+    try {
+      const { activityService } = await import('@/services/api/activityService');
+      const contactActivities = await activityService.getByContactId(contact.Id);
+      setActivities(contactActivities);
+    } catch (error) {
+      toast.error('Failed to load activities');
+    } finally {
+      setIsActivitiesLoading(false);
+    }
+  };
+
+  const handleAddActivity = () => {
+    setEditingActivity(null);
+    setIsActivityFormOpen(true);
+  };
+
+  const handleEditActivity = (activity) => {
+    setEditingActivity(activity);
+    setIsActivityFormOpen(true);
+  };
+
+  const handleSaveActivity = async (activityData) => {
+    setIsActivitySaving(true);
+    try {
+      const { activityService } = await import('@/services/api/activityService');
+      
+      if (editingActivity) {
+        await activityService.update(editingActivity.Id, activityData);
+      } else {
+        await activityService.create(activityData);
+      }
+      
+      await loadActivities();
+      setIsActivityFormOpen(false);
+      setEditingActivity(null);
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsActivitySaving(false);
+    }
+  };
+
+  const handleDeleteActivity = async (activityId) => {
+    try {
+      const { activityService } = await import('@/services/api/activityService');
+      await activityService.delete(activityId);
+      await loadActivities();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // Load activities when tab changes to activities
+  React.useEffect(() => {
+    if (activeTab === 'activities') {
+      loadActivities();
+    }
+  }, [activeTab, contact.Id]);
 
   return (
     <div className="space-y-6">
@@ -272,14 +340,107 @@ const ContactDetail = ({ contact, companies = [], onUpdate, onDelete, onClose })
                 </div>
               </div>
             )}
-            
-            <div className="text-xs text-gray-500 border-t pt-4">
+<div className="text-xs text-gray-500 border-t pt-4">
               <div>Created: {new Date(contact.createdAt).toLocaleDateString()}</div>
               <div>Last updated: {new Date(contact.updatedAt).toLocaleDateString()}</div>
             </div>
           </div>
         )}
+
+        {/* Activity Log Tab */}
+        {activeTab === 'activities' && (
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Activity Log</h3>
+                <p className="text-sm text-gray-500">Track all interactions with this contact</p>
+              </div>
+              <Button
+                variant="primary"
+                onClick={handleAddActivity}
+                className="flex items-center gap-2"
+              >
+                <ApperIcon name="Plus" size={16} />
+                Add Activity
+              </Button>
+            </div>
+
+            <div className="space-y-6">
+              {React.createElement(() => {
+                const ActivityList = React.lazy(() => import('@/components/organisms/ActivityList'));
+                return (
+                  <React.Suspense fallback={<div>Loading activities...</div>}>
+                    <ActivityList
+                      activities={activities}
+                      onEdit={handleEditActivity}
+                      onDelete={handleDeleteActivity}
+                      isLoading={isActivitiesLoading}
+                    />
+                  </React.Suspense>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Tab Navigation */}
+        <div className="border-t border-gray-200 px-6 py-4">
+          <div className="flex space-x-1">
+            <button
+              onClick={() => setActiveTab('details')}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                activeTab === 'details'
+                  ? 'bg-indigo-100 text-indigo-700'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <ApperIcon name="User" size={16} className="inline mr-2" />
+              Details
+            </button>
+            <button
+              onClick={() => setActiveTab('activities')}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                activeTab === 'activities'
+                  ? 'bg-indigo-100 text-indigo-700'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <ApperIcon name="Activity" size={16} className="inline mr-2" />
+              Activity Log
+              {activities.length > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-gray-200 text-gray-600 rounded-full">
+                  {activities.length}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
+
+      {/* Activity Form Modal */}
+      {isActivityFormOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            {React.createElement(() => {
+              const ActivityForm = React.lazy(() => import('@/components/organisms/ActivityForm'));
+              return (
+                <React.Suspense fallback={<div className="p-6">Loading form...</div>}>
+                  <ActivityForm
+                    activity={editingActivity}
+                    contactId={contact.Id}
+                    onSave={handleSaveActivity}
+                    onCancel={() => {
+                      setIsActivityFormOpen(false);
+                      setEditingActivity(null);
+                    }}
+                    isLoading={isActivitySaving}
+                  />
+                </React.Suspense>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

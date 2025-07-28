@@ -1,0 +1,74 @@
+[
+  {
+    "Id": 1,
+    "contactId": 1,
+    "type": "Call",
+    "date": "2024-01-22T10:30:00Z",
+    "description": "Discussed project requirements and timeline. Sarah is excited about the new features.",
+    "createdAt": "2024-01-22T10:35:00Z",
+    "updatedAt": "2024-01-22T10:35:00Z"
+  },
+  {
+    "Id": 2,
+    "contactId": 1,
+    "type": "Email",
+    "date": "2024-01-20T14:15:00Z",
+    "description": "Sent project proposal and technical specifications document.",
+    "createdAt": "2024-01-20T14:20:00Z",
+    "updatedAt": "2024-01-20T14:20:00Z"
+  },
+  {
+    "Id": 3,
+    "contactId": 2,
+    "type": "Meeting",
+    "date": "2024-01-21T16:00:00Z",
+    "description": "Product demo session. Michael showed great interest in the healthcare module.",
+    "createdAt": "2024-01-21T16:30:00Z",
+    "updatedAt": "2024-01-21T16:30:00Z"
+  },
+  {
+    "Id": 4,
+    "contactId": 2,
+    "type": "Note",
+    "date": "2024-01-19T09:45:00Z",
+    "description": "Follow up needed after the weekend. Prefers phone calls over emails.",
+    "createdAt": "2024-01-19T09:50:00Z",
+    "updatedAt": "2024-01-19T09:50:00Z"
+  },
+  {
+    "Id": 5,
+    "contactId": 3,
+    "type": "Call",
+    "date": "2024-01-23T11:20:00Z",
+    "description": "Budget discussion. Emily needs approval from finance director before proceeding.",
+    "createdAt": "2024-01-23T11:25:00Z",
+    "updatedAt": "2024-01-23T11:25:00Z"
+  },
+  {
+    "Id": 6,
+    "contactId": 3,
+    "type": "Email",
+    "date": "2024-01-18T13:30:00Z",
+    "description": "Sent detailed cost breakdown and ROI analysis as requested.",
+    "createdAt": "2024-01-18T13:35:00Z",
+    "updatedAt": "2024-01-18T13:35:00Z"
+  },
+  {
+    "Id": 7,
+    "contactId": 5,
+    "type": "Meeting",
+    "date": "2024-01-24T14:00:00Z",
+    "description": "AI learning tools demonstration. Jessica is very interested in K-12 applications.",
+    "createdAt": "2024-01-24T14:30:00Z",
+    "updatedAt": "2024-01-24T14:30:00Z"
+  },
+  {
+    "Id": 8,
+    "contactId": 6,
+    "type": "Note",
+    "date": "2024-01-25T08:15:00Z",
+    "description": "Robert mentioned they're planning equipment upgrade in Q2. Good opportunity for follow-up.",
+    "createdAt": "2024-01-25T08:20:00Z",
+    "updatedAt": "2024-01-25T08:20:00Z"
+  }
+]

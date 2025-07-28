@@ -67,7 +67,7 @@ const Contacts = () => {
     } catch (err) {
       throw new Error(err.message || "Failed to delete contact");
     }
-  };
+};
 
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
@@ -109,7 +109,7 @@ const Contacts = () => {
         title="Contact Details"
         size="lg"
       >
-        {selectedContact && (
+{selectedContact && (
           <ContactDetail
             contact={selectedContact}
             companies={companies}

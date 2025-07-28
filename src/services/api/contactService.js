@@ -23,7 +23,7 @@ export const contactService = {
     await delay(400);
     
 const maxId = contacts.length > 0 ? Math.max(...contacts.map(c => c.Id)) : 0;
-    const newContact = {
+const newContact = {
       Id: maxId + 1,
       name: contactData.name || "",
       email: contactData.email || "",
@@ -32,6 +32,7 @@ const maxId = contacts.length > 0 ? Math.max(...contacts.map(c => c.Id)) : 0;
       notes: contactData.notes || "",
       status: contactData.status || "Lead",
       companyId: contactData.companyId ? parseInt(contactData.companyId) : null,
+      activities: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -76,3 +77,5 @@ contacts[index] = {
     return true;
   }
 };
+
+export { contactService };
