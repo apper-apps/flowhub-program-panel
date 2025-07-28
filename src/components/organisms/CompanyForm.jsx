@@ -5,10 +5,13 @@ import Select from "@/components/atoms/Select";
 import ApperIcon from "@/components/ApperIcon";
 import { toast } from "react-toastify";
 
-const CompanyForm = ({ onSubmit, onCancel }) => {
+const CompanyForm = ({ onSubmit, onCancel, initialData = null }) => {
   const [formData, setFormData] = useState({
-    name: "",
-    industry: ""
+    name: initialData?.name || "",
+    industry: initialData?.industry || "",
+    website: initialData?.website || "",
+    phone: initialData?.phone || "",
+    address: initialData?.address || ""
   });
   
   const [errors, setErrors] = useState({});
@@ -40,7 +43,7 @@ const CompanyForm = ({ onSubmit, onCancel }) => {
   };
 
   const validateForm = () => {
-    const newErrors = {};
+const newErrors = {};
     
     if (!formData.name.trim()) {
       newErrors.name = "Company name is required";
@@ -48,6 +51,14 @@ const CompanyForm = ({ onSubmit, onCancel }) => {
     
     if (!formData.industry.trim()) {
       newErrors.industry = "Industry is required";
+    }
+
+    if (formData.website && !formData.website.match(/^https?:\/\/.+/)) {
+      newErrors.website = "Website must be a valid URL (starting with http:// or https://)";
+    }
+
+    if (formData.phone && !formData.phone.match(/^[\+]?[1-9][\d]{0,15}$/)) {
+      newErrors.phone = "Please enter a valid phone number";
     }
     
     setErrors(newErrors);
@@ -69,10 +80,13 @@ const CompanyForm = ({ onSubmit, onCancel }) => {
       
       toast.success("Company added successfully!");
       
-      // Reset form
+// Reset form
       setFormData({
         name: "",
-        industry: ""
+        industry: "",
+        website: "",
+        phone: "",
+        address: ""
       });
       
     } catch (error) {
@@ -83,7 +97,7 @@ const CompanyForm = ({ onSubmit, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+<form onSubmit={handleSubmit} className="space-y-6">
       <Input
         label="Company Name"
         name="name"
@@ -109,6 +123,33 @@ const CompanyForm = ({ onSubmit, onCancel }) => {
           </option>
         ))}
       </Select>
+
+      <Input
+        label="Website"
+        name="website"
+        value={formData.website}
+        onChange={handleChange}
+        error={errors.website}
+        placeholder="https://www.company.com"
+      />
+
+      <Input
+        label="Phone"
+        name="phone"
+        value={formData.phone}
+        onChange={handleChange}
+        error={errors.phone}
+        placeholder="Enter phone number"
+      />
+
+      <Input
+        label="Address"
+        name="address"
+        value={formData.address}
+        onChange={handleChange}
+        error={errors.address}
+        placeholder="Enter company address"
+      />
       
       <div className="flex items-center justify-end space-x-3 pt-4">
         <Button
@@ -126,15 +167,15 @@ const CompanyForm = ({ onSubmit, onCancel }) => {
           disabled={isSubmitting}
           className="min-w-[120px]"
         >
-          {isSubmitting ? (
+{isSubmitting ? (
             <>
               <ApperIcon name="Loader2" size={16} className="mr-2 animate-spin" />
-              Adding...
+              {initialData ? 'Updating...' : 'Adding...'}
             </>
           ) : (
             <>
-              <ApperIcon name="Plus" size={16} className="mr-2" />
-              Add Company
+              <ApperIcon name={initialData ? "Save" : "Plus"} size={16} className="mr-2" />
+              {initialData ? 'Update Company' : 'Add Company'}
             </>
           )}
         </Button>

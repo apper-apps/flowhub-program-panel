@@ -5,11 +5,12 @@ import Modal from "@/components/molecules/Modal";
 import { companyService } from "@/services/api/companyService";
 
 const Companies = () => {
-  const [companies, setCompanies] = useState([]);
+const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState(null);
   const loadCompanies = async () => {
     try {
       setLoading(true);
@@ -32,6 +33,20 @@ const Companies = () => {
     } catch (err) {
       throw new Error(err.message || "Failed to add company");
     }
+};
+
+  const handleEditCompany = (company) => {
+    setSelectedCompany(company);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateCompany = async (companyData) => {
+    const updatedCompany = await companyService.update(selectedCompany.Id, companyData);
+    setCompanies(prev => prev.map(company => 
+      company.Id === selectedCompany.Id ? updatedCompany : company
+    ));
+    setIsEditModalOpen(false);
+    setSelectedCompany(null);
   };
 
   useEffect(() => {
@@ -40,23 +55,43 @@ const Companies = () => {
 
   return (
     <>
-      <CompanyList
+<CompanyList
         companies={companies}
         loading={loading}
         error={error}
         onRetry={loadCompanies}
         onAddCompany={() => setIsAddModalOpen(true)}
+        onEditCompany={handleEditCompany}
       />
 
-      <Modal
+<Modal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         title="Add New Company"
-        size="md"
+        size="lg"
       >
         <CompanyForm
           onSubmit={handleAddCompany}
           onCancel={() => setIsAddModalOpen(false)}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedCompany(null);
+        }}
+        title="Edit Company"
+        size="lg"
+      >
+        <CompanyForm
+          initialData={selectedCompany}
+          onSubmit={handleUpdateCompany}
+          onCancel={() => {
+            setIsEditModalOpen(false);
+            setSelectedCompany(null);
+          }}
         />
       </Modal>
     </>

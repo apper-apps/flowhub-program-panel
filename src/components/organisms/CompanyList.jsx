@@ -11,17 +11,20 @@ const CompanyList = ({
   loading = false, 
   error = null, 
   onRetry,
-  onAddCompany 
+  onAddCompany,
+  onEditCompany 
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredCompanies = useMemo(() => {
+const filteredCompanies = useMemo(() => {
     if (!searchQuery.trim()) return companies;
     
     const query = searchQuery.toLowerCase();
     return companies.filter(company => 
       company.name.toLowerCase().includes(query) ||
-      company.industry.toLowerCase().includes(query)
+      company.industry.toLowerCase().includes(query) ||
+      (company.website && company.website.toLowerCase().includes(query)) ||
+      (company.phone && company.phone.toLowerCase().includes(query))
     );
   }, [companies, searchQuery]);
 
@@ -94,7 +97,7 @@ const CompanyList = ({
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-100">
+<thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Company
@@ -102,13 +105,19 @@ const CompanyList = ({
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Industry
                   </th>
+                  <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Contact
+                  </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Added
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {filteredCompanies.map((company, index) => (
+{filteredCompanies.map((company, index) => (
                   <tr 
                     key={company.Id} 
                     className={`hover:bg-gray-50 transition-colors duration-150 ${
@@ -124,6 +133,11 @@ const CompanyList = ({
                           <div className="text-sm font-semibold text-gray-900">
                             {company.name}
                           </div>
+                          {company.address && (
+                            <div className="text-xs text-gray-500 mt-1">
+                              {company.address}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </td>
@@ -132,10 +146,44 @@ const CompanyList = ({
                         {company.industry}
                       </span>
                     </td>
+                    <td className="hidden md:table-cell px-6 py-4">
+                      <div className="space-y-1">
+                        {company.website && (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <ApperIcon name="Globe" size={12} className="mr-2" />
+                            <a 
+                              href={company.website} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-blue-800 truncate max-w-[120px]"
+                            >
+                              {company.website.replace(/^https?:\/\//, '')}
+                            </a>
+                          </div>
+                        )}
+                        {company.phone && (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <ApperIcon name="Phone" size={12} className="mr-2" />
+                            <span>{company.phone}</span>
+                          </div>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-600">
                         {new Date(company.createdAt).toLocaleDateString()}
                       </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onEditCompany && onEditCompany(company)}
+                        className="text-gray-600 hover:text-gray-900"
+                      >
+                        <ApperIcon name="Edit2" size={14} className="mr-1" />
+                        Edit
+                      </Button>
                     </td>
                   </tr>
                 ))}

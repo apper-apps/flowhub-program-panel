@@ -19,13 +19,17 @@ export const companyService = {
     return { ...company };
   },
 
-  async create(companyData) {
+async create(companyData) {
     await delay(400);
     
     const maxId = companies.length > 0 ? Math.max(...companies.map(c => c.Id)) : 0;
     const newCompany = {
       Id: maxId + 1,
-      ...companyData,
+      name: companyData.name,
+      industry: companyData.industry,
+      website: companyData.website || null,
+      phone: companyData.phone || null,
+      address: companyData.address || null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -34,7 +38,7 @@ export const companyService = {
     return { ...newCompany };
   },
 
-  async update(id, updateData) {
+async update(id, updateData) {
     await delay(300);
     
     const index = companies.findIndex(c => c.Id === parseInt(id));
@@ -44,7 +48,11 @@ export const companyService = {
     
     companies[index] = {
       ...companies[index],
-      ...updateData,
+      name: updateData.name,
+      industry: updateData.industry,
+      website: updateData.website || null,
+      phone: updateData.phone || null,
+      address: updateData.address || null,
       Id: parseInt(id),
       updatedAt: new Date().toISOString()
     };
