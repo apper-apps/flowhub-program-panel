@@ -35,12 +35,11 @@ useEffect(() => {
     filterTasks();
   }, [tasks, searchTerm, statusFilter, priorityFilter, startDate, endDate, sortBy]);
 
-  const loadTasks = async () => {
+const loadTasks = async () => {
     try {
       setIsLoading(true);
-      const { taskService } = await import('@/services/api/taskService');
       const data = await taskService.getAll();
-      setTasks(data);
+      setTasks(data || []);
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -119,16 +118,18 @@ const filterTasks = () => {
     setIsDetailOpen(true);
   };
 
-  const handleSaveTask = async (taskData) => {
+const handleSaveTask = async (taskData) => {
     try {
-      const { taskService } = await import('@/services/api/taskService');
-      
       if (editingTask) {
-        await taskService.update(editingTask.Id, taskData);
-        toast.success('Task updated successfully');
+        const result = await taskService.update(editingTask.Id, taskData);
+        if (result) {
+          toast.success('Task updated successfully');
+        }
       } else {
-        await taskService.create(taskData);
-        toast.success('Task created successfully');
+        const result = await taskService.create(taskData);
+        if (result) {
+          toast.success('Task created successfully');
+        }
       }
       
       await loadTasks();
@@ -142,22 +143,24 @@ const filterTasks = () => {
   const handleDeleteTask = async (taskId) => {
     if (!window.confirm('Are you sure you want to delete this task?')) return;
     
-    try {
-      const { taskService } = await import('@/services/api/taskService');
-      await taskService.delete(taskId);
-      toast.success('Task deleted successfully');
-      await loadTasks();
+try {
+      const success = await taskService.delete(taskId);
+      if (success) {
+        toast.success('Task deleted successfully');
+        await loadTasks();
+      }
     } catch (error) {
       toast.error(error.message);
     }
   };
 
-  const handleToggleStatus = async (taskId) => {
+const handleToggleStatus = async (taskId) => {
     try {
-      const { taskService } = await import('@/services/api/taskService');
-      await taskService.toggleStatus(taskId);
-      toast.success('Task status updated');
-      await loadTasks();
+      const result = await taskService.toggleStatus(taskId);
+      if (result) {
+        toast.success('Task status updated');
+        await loadTasks();
+      }
     } catch (error) {
       toast.error(error.message);
     }

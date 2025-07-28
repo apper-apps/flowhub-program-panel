@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 
 const ContactForm = ({ onSubmit, onCancel, companies = [], contact = null }) => {
 const [formData, setFormData] = useState({
-    name: contact?.name || "",
+    name: contact?.Name || "",
     email: contact?.email || "",
     phone: contact?.phone || "",
     jobTitle: contact?.jobTitle || "",
@@ -69,7 +69,7 @@ await onSubmit({
       
       // Reset form only if adding new contact
       if (!contact) {
-        setFormData({
+setFormData({
           name: "",
           email: "",
           phone: "",
@@ -151,10 +151,10 @@ return (
               value={formData.companyId}
               onChange={handleChange}
             >
-              <option value="">Select a company</option>
+<option value="">Select a company</option>
               {companies.map((company) => (
                 <option key={company.Id} value={company.Id}>
-                  {company.name}
+                  {company.Name}
                 </option>
               ))}
             </Select>

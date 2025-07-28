@@ -25,8 +25,8 @@ const [companiesData, contactsData] = await Promise.all([
         contactService.getAll()
       ]);
       
-      setCompanies(companiesData);
-      setContacts(contactsData);
+      setCompanies(companiesData || []);
+      setContacts(contactsData || []);
     } catch (err) {
       setError(err.message || "Failed to load companies");
     } finally {
@@ -36,9 +36,11 @@ const [companiesData, contactsData] = await Promise.all([
 const handleAddCompany = async (companyData) => {
     try {
       const newCompany = await companyService.create(companyData);
-      setCompanies(prev => [...prev, newCompany]);
-      setIsAddModalOpen(false);
-      toast.success("Company added successfully!");
+      if (newCompany) {
+        setCompanies(prev => [...prev, newCompany]);
+        setIsAddModalOpen(false);
+        toast.success("Company added successfully!");
+      }
     } catch (err) {
       console.error("Failed to add company:", err);
       toast.error(err.message || "Failed to add company");
@@ -58,12 +60,14 @@ const handleAddCompany = async (companyData) => {
 const handleUpdateCompany = async (companyData) => {
     try {
       const updatedCompany = await companyService.update(selectedCompany.Id, companyData);
-      setCompanies(prev => prev.map(company => 
-        company.Id === selectedCompany.Id ? updatedCompany : company
-      ));
-      setIsEditModalOpen(false);
-      setSelectedCompany(null);
-      toast.success("Company updated successfully!");
+      if (updatedCompany) {
+        setCompanies(prev => prev.map(company => 
+          company.Id === selectedCompany.Id ? updatedCompany : company
+        ));
+        setIsEditModalOpen(false);
+        setSelectedCompany(null);
+        toast.success("Company updated successfully!");
+      }
     } catch (err) {
       console.error("Failed to update company:", err);
       toast.error(err.message || "Failed to update company");

@@ -65,7 +65,12 @@ const Layout = () => {
             <span className="text-sm font-semibold text-gray-900">FlowHub</span>
           </div>
           
-          <div className="w-8 h-8 bg-gradient-accent rounded-full flex items-center justify-center touch-target">
+<div className="w-8 h-8 bg-gradient-accent rounded-full flex items-center justify-center touch-target cursor-pointer" onClick={() => {
+            const { AuthContext } = window;
+            if (AuthContext?.logout) {
+              AuthContext.logout();
+            }
+          }}>
             <ApperIcon name="User" size={14} className="text-white" />
           </div>
         </div>

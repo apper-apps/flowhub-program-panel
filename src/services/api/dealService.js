@@ -1,136 +1,488 @@
-import mockDeals from "@/services/mockData/deals.json";
 import { toast } from "react-toastify";
-import React from "react";
-import Error from "@/components/ui/Error";
 
-let deals = [...mockDeals];
-let nextId = Math.max(...deals.map(d => d.Id)) + 1;
+export const dealService = {
+  async getAll() {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
 
-// Get all deals
-export const getAll = () => {
-  return [...deals];
-};
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "value" } },
+          { field: { Name: "stage" } },
+          { field: { Name: "expectedCloseDate" } },
+          { field: { Name: "contactId" } },
+          { field: { Name: "companyId" } },
+          { field: { Name: "notes" } },
+          { field: { Name: "createdAt" } },
+          { field: { Name: "updatedAt" } }
+        ]
+      };
 
-// Get deal by ID
-export const getById = (id) => {
-  const dealId = parseInt(id);
-  if (isNaN(dealId)) {
-    throw new Error('Invalid deal ID');
+      const response = await apperClient.fetchRecords('deal', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching deals:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
+  },
+
+  async getById(id) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "value" } },
+          { field: { Name: "stage" } },
+          { field: { Name: "expectedCloseDate" } },
+          { field: { Name: "contactId" } },
+          { field: { Name: "companyId" } },
+          { field: { Name: "notes" } },
+          { field: { Name: "createdAt" } },
+          { field: { Name: "updatedAt" } }
+        ]
+      };
+
+      const response = await apperClient.getRecordById('deal', parseInt(id), params);
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching deal with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
+  },
+
+  async create(dealData) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      // Only include Updateable fields
+      const params = {
+        records: [{
+          Name: dealData.name || "",
+          value: parseFloat(dealData.value) || 0,
+          stage: dealData.stage || "Prospecting",
+          expectedCloseDate: dealData.expectedCloseDate || null,
+          contactId: dealData.contactId ? parseInt(dealData.contactId) : null,
+          companyId: dealData.companyId ? parseInt(dealData.companyId) : null,
+          notes: dealData.notes || "",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }]
+      };
+
+      const response = await apperClient.createRecord('deal', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create deal ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          failedRecords.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+
+        if (successfulRecords.length > 0) {
+          const createdDeal = successfulRecords[0].data;
+          toast.success(`Deal "${createdDeal.Name}" created successfully!`);
+          return createdDeal;
+        }
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating deal:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
+  },
+
+  async update(id, dealData) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      // Only include Updateable fields
+      const params = {
+        records: [{
+          Id: parseInt(id),
+          Name: dealData.name,
+          value: parseFloat(dealData.value),
+          stage: dealData.stage,
+          expectedCloseDate: dealData.expectedCloseDate,
+          contactId: dealData.contactId ? parseInt(dealData.contactId) : null,
+          companyId: dealData.companyId ? parseInt(dealData.companyId) : null,
+          notes: dealData.notes,
+          updatedAt: new Date().toISOString()
+        }]
+      };
+
+      const response = await apperClient.updateRecord('deal', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update deal ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+
+        if (successfulUpdates.length > 0) {
+          const updatedDeal = successfulUpdates[0].data;
+          toast.success(`Deal "${updatedDeal.Name}" updated successfully!`);
+          return updatedDeal;
+        }
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating deal:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
+  },
+
+  async deleteDeal(id) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      // First get the deal name for success message
+      const dealToDelete = await this.getById(id);
+
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
+
+      const response = await apperClient.deleteRecord('deal', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulDeletions = response.results.filter(result => result.success);
+        const failedDeletions = response.results.filter(result => !result.success);
+
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete deal ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
+          failedDeletions.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+        }
+
+        if (successfulDeletions.length > 0) {
+          toast.success(`Deal "${dealToDelete?.Name || 'Unknown'}" deleted successfully!`);
+          return dealToDelete;
+        }
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting deal:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
+  },
+
+  async getByStage(stage) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "value" } },
+          { field: { Name: "stage" } },
+          { field: { Name: "expectedCloseDate" } },
+          { field: { Name: "contactId" } },
+          { field: { Name: "companyId" } },
+          { field: { Name: "notes" } },
+          { field: { Name: "createdAt" } },
+          { field: { Name: "updatedAt" } }
+        ],
+        where: [
+          {
+            FieldName: "stage",
+            Operator: "EqualTo",
+            Values: [stage]
+          }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('deal', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching deals by stage:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
+  },
+
+  async getByCompany(companyId) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "value" } },
+          { field: { Name: "stage" } },
+          { field: { Name: "expectedCloseDate" } },
+          { field: { Name: "contactId" } },
+          { field: { Name: "companyId" } },
+          { field: { Name: "notes" } },
+          { field: { Name: "createdAt" } },
+          { field: { Name: "updatedAt" } }
+        ],
+        where: [
+          {
+            FieldName: "companyId",
+            Operator: "EqualTo",
+            Values: [parseInt(companyId)]
+          }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('deal', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching deals by company:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
+  },
+
+  async getByContact(contactId) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "value" } },
+          { field: { Name: "stage" } },
+          { field: { Name: "expectedCloseDate" } },
+          { field: { Name: "contactId" } },
+          { field: { Name: "companyId" } },
+          { field: { Name: "notes" } },
+          { field: { Name: "createdAt" } },
+          { field: { Name: "updatedAt" } }
+        ],
+        where: [
+          {
+            FieldName: "contactId",
+            Operator: "EqualTo",
+            Values: [parseInt(contactId)]
+          }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('deal', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching deals by contact:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
+  },
+
+  async getStats() {
+    try {
+      const deals = await this.getAll();
+      
+      return {
+        total: deals.length,
+        prospecting: deals.filter(d => d.stage === 'Prospecting').length,
+        proposal: deals.filter(d => d.stage === 'Proposal').length,
+        negotiation: deals.filter(d => d.stage === 'Negotiation').length,
+        closedWon: deals.filter(d => d.stage === 'Closed Won').length,
+        closedLost: deals.filter(d => d.stage === 'Closed Lost').length,
+        totalValue: deals.reduce((sum, d) => sum + (d.value || 0), 0),
+        avgValue: deals.length > 0 ? deals.reduce((sum, d) => sum + (d.value || 0), 0) / deals.length : 0
+      };
+    } catch (error) {
+      console.error("Error calculating deal stats:", error.message);
+      return {
+        total: 0,
+        prospecting: 0,
+        proposal: 0,
+        negotiation: 0,
+        closedWon: 0,
+        closedLost: 0,
+        totalValue: 0,
+        avgValue: 0
+      };
+    }
+  },
+
+  async updateStage(id, newStage) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        records: [{
+          Id: parseInt(id),
+          stage: newStage,
+          updatedAt: new Date().toISOString()
+        }]
+      };
+
+      const response = await apperClient.updateRecord('deal', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update deal stage ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+
+        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating deal stage:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
   }
-  
-  const deal = deals.find(d => d.Id === dealId);
-  if (!deal) {
-    throw new Error('Deal not found');
-  }
-  
-  return { ...deal };
 };
 
-// Create new deal
-export const create = (dealData) => {
-  const newDeal = {
-    ...dealData,
-    Id: nextId++,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-  
-  deals.push(newDeal);
-  toast.success(`Deal "${newDeal.name}" created successfully!`);
-  return { ...newDeal };
-};
-
-// Update existing deal
-export const update = (id, dealData) => {
-  const dealId = parseInt(id);
-  if (isNaN(dealId)) {
-    throw new Error('Invalid deal ID');
-  }
-  
-  const index = deals.findIndex(d => d.Id === dealId);
-  if (index === -1) {
-    throw new Error('Deal not found');
-  }
-  
-  const updatedDeal = {
-    ...deals[index],
-    ...dealData,
-    Id: dealId, // Ensure ID doesn't change
-    updatedAt: new Date().toISOString()
-  };
-  
-  deals[index] = updatedDeal;
-  toast.success(`Deal "${updatedDeal.name}" updated successfully!`);
-  return { ...updatedDeal };
-};
-
-// Delete deal
-export const deleteDeal = (id) => {
-  const dealId = parseInt(id);
-  if (isNaN(dealId)) {
-    throw new Error('Invalid deal ID');
-  }
-  
-  const index = deals.findIndex(d => d.Id === dealId);
-  if (index === -1) {
-    throw new Error('Deal not found');
-  }
-  
-  const deletedDeal = deals[index];
-  deals.splice(index, 1);
-  toast.success(`Deal "${deletedDeal.name}" deleted successfully!`);
-  return { ...deletedDeal };
-};
-
-// Get deals by stage
-export const getByStage = (stage) => {
-  return deals.filter(d => d.stage === stage).map(d => ({ ...d }));
-};
-
-// Get deals by company
-export const getByCompany = (companyId) => {
-  const compId = parseInt(companyId);
-  return deals.filter(d => d.companyId === compId).map(d => ({ ...d }));
-};
-
-// Get deals by contact
-export const getByContact = (contactId) => {
-  const contId = parseInt(contactId);
-  return deals.filter(d => d.contactId === contId).map(d => ({ ...d }));
-};
-
-// Get deal statistics
-export const getStats = () => {
-  return {
-    total: deals.length,
-    prospecting: deals.filter(d => d.stage === 'Prospecting').length,
-    proposal: deals.filter(d => d.stage === 'Proposal').length,
-    negotiation: deals.filter(d => d.stage === 'Negotiation').length,
-    closedWon: deals.filter(d => d.stage === 'Closed Won').length,
-closedLost: deals.filter(d => d.stage === 'Closed Lost').length,
-    totalValue: deals.reduce((sum, d) => sum + d.value, 0),
-    avgValue: deals.length > 0 ? deals.reduce((sum, d) => sum + d.value, 0) / deals.length : 0
-  };
-};
-
-// Update deal stage (for kanban drag and drop)
-export const updateStage = (id, newStage) => {
-  const dealId = parseInt(id);
-  if (isNaN(dealId)) {
-    throw new Error('Invalid deal ID');
-  }
-  
-  const index = deals.findIndex(d => d.Id === dealId);
-  if (index === -1) {
-    throw new Error('Deal not found');
-  }
-  
-  const updatedDeal = {
-    ...deals[index],
-    stage: newStage,
-    updatedAt: new Date().toISOString()
-  };
-  
-  deals[index] = updatedDeal;
-  return { ...updatedDeal };
-};
+// Export individual functions for backward compatibility
+export const getAll = () => dealService.getAll();
+export const getById = (id) => dealService.getById(id);
+export const create = (dealData) => dealService.create(dealData);
+export const update = (id, dealData) => dealService.update(id, dealData);
+export const deleteDeal = (id) => dealService.deleteDeal(id);
+export const getByStage = (stage) => dealService.getByStage(stage);
+export const getByCompany = (companyId) => dealService.getByCompany(companyId);
+export const getByContact = (contactId) => dealService.getByContact(contactId);
+export const getStats = () => dealService.getStats();
+export const updateStage = (id, newStage) => dealService.updateStage(id, newStage);

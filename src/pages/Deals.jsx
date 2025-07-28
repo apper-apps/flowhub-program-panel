@@ -65,9 +65,9 @@ const [dealsData, contactsData, companiesData] = await Promise.all([
         companyService.getAll()
       ]);
       
-      setDeals(dealsData);
-      setContacts(contactsData);
-      setCompanies(companiesData);
+      setDeals(dealsData || []);
+      setContacts(contactsData || []);
+      setCompanies(companiesData || []);
     } catch (err) {
       setError(err.message);
       toast.error('Failed to load deals data');
@@ -145,26 +145,32 @@ const handleCreateDeal = () => {
     setDeleteConfirm(deal);
   };
 
-  const confirmDelete = async () => {
+const confirmDelete = async () => {
     if (!deleteConfirm) return;
     
     try {
-      await dealService.deleteDeal(deleteConfirm.Id);
-      setDeals(deals.filter(d => d.Id !== deleteConfirm.Id));
-      setDeleteConfirm(null);
+      const result = await dealService.deleteDeal(deleteConfirm.Id);
+      if (result) {
+        setDeals(deals.filter(d => d.Id !== deleteConfirm.Id));
+        setDeleteConfirm(null);
+      }
     } catch (err) {
       toast.error('Failed to delete deal');
     }
   };
 
-  const handleSubmit = async (dealData) => {
+const handleSubmit = async (dealData) => {
     try {
       if (editingDeal) {
         const updatedDeal = await dealService.update(editingDeal.Id, dealData);
-        setDeals(deals.map(d => d.Id === editingDeal.Id ? updatedDeal : d));
+        if (updatedDeal) {
+          setDeals(deals.map(d => d.Id === editingDeal.Id ? updatedDeal : d));
+        }
       } else {
         const newDeal = await dealService.create(dealData);
-        setDeals([newDeal, ...deals]);
+        if (newDeal) {
+          setDeals([newDeal, ...deals]);
+        }
       }
       setShowModal(false);
       setEditingDeal(null);
@@ -183,10 +189,12 @@ const handleCreateDeal = () => {
     const dealId = parseInt(draggableId);
     const newStage = destination.droppableId;
     
-    try {
+try {
       const updatedDeal = await dealService.updateStage(dealId, newStage);
-      setDeals(deals.map(d => d.Id === dealId ? updatedDeal : d));
-      toast.success(`Deal moved to ${newStage}`);
+      if (updatedDeal) {
+        setDeals(deals.map(d => d.Id === dealId ? updatedDeal : d));
+        toast.success(`Deal moved to ${newStage}`);
+      }
     } catch (err) {
       toast.error('Failed to update deal stage');
     }

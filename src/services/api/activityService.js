@@ -1,122 +1,333 @@
-import activitiesData from '@/services/mockData/activities.json';
 import { toast } from 'react-toastify';
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Copy data to avoid mutations
-const activities = [...activitiesData];
 
 const activityService = {
   async getAll() {
-    await delay(300);
-    return [...activities];
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "contactId" } },
+          { field: { Name: "type" } },
+          { field: { Name: "date" } },
+          { field: { Name: "description" } },
+          { field: { Name: "emailData" } },
+          { field: { Name: "createdAt" } },
+          { field: { Name: "updatedAt" } }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('app_Activity', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching activities:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   },
 
   async getById(id) {
-    await delay(200);
-    const activityId = parseInt(id);
-    const activity = activities.find(a => a.Id === activityId);
-    if (!activity) {
-      throw new Error('Activity not found');
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "contactId" } },
+          { field: { Name: "type" } },
+          { field: { Name: "date" } },
+          { field: { Name: "description" } },
+          { field: { Name: "emailData" } },
+          { field: { Name: "createdAt" } },
+          { field: { Name: "updatedAt" } }
+        ]
+      };
+
+      const response = await apperClient.getRecordById('app_Activity', parseInt(id), params);
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching activity with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
     }
-    return { ...activity };
   },
 
   async getByContactId(contactId) {
-    await delay(200);
-    const id = parseInt(contactId);
-    return activities
-      .filter(activity => activity.contactId === id)
-      .map(activity => ({ ...activity }))
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "contactId" } },
+          { field: { Name: "type" } },
+          { field: { Name: "date" } },
+          { field: { Name: "description" } },
+          { field: { Name: "emailData" } },
+          { field: { Name: "createdAt" } },
+          { field: { Name: "updatedAt" } }
+        ],
+        where: [
+          {
+            FieldName: "contactId",
+            Operator: "EqualTo",
+            Values: [parseInt(contactId)]
+          }
+        ],
+        orderBy: [
+          {
+            fieldName: "date",
+            sorttype: "DESC"
+          }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('app_Activity', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching activities by contact ID:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   },
 
-async create(activityData) {
-    await delay(500);
-    
-    if (!activityData.contactId || !activityData.type || !activityData.date || !activityData.description?.trim()) {
-      throw new Error('Contact, type, date, and description are required');
-    }
-
-    // Additional validation for email activities
-    if (activityData.type === 'email') {
-      if (!activityData.emailData || !activityData.emailData.to || !activityData.emailData.subject) {
-        throw new Error('Email activities require recipient and subject information');
+  async create(activityData) {
+    try {
+      if (!activityData.contactId || !activityData.type || !activityData.date || !activityData.description?.trim()) {
+        throw new Error('Contact, type, date, and description are required');
       }
-    }
 
-    const maxId = activities.length > 0 ? Math.max(...activities.map(a => a.Id)) : 0;
-    const newActivity = {
-      Id: maxId + 1,
-      contactId: parseInt(activityData.contactId),
-      type: activityData.type,
-      date: activityData.date,
-      description: activityData.description.trim(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+      // Additional validation for email activities
+      if (activityData.type === 'Email' && activityData.emailData) {
+        if (!activityData.emailData.to || !activityData.emailData.subject) {
+          throw new Error('Email activities require recipient and subject information');
+        }
+      }
 
-    // Add email-specific data if this is an email activity
-    if (activityData.type === 'email' && activityData.emailData) {
-      newActivity.emailData = {
-        to: activityData.emailData.to,
-        subject: activityData.emailData.subject,
-        body: activityData.emailData.body,
-        sentAt: activityData.emailData.sentAt || new Date().toISOString()
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const recordData = {
+        Name: `${activityData.type} - ${new Date(activityData.date).toLocaleDateString()}`,
+        contactId: parseInt(activityData.contactId),
+        type: activityData.type,
+        date: activityData.date,
+        description: activityData.description.trim(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
-    }
 
-    activities.push(newActivity);
-    
-    // Customize success message for email activities
-    if (activityData.type === 'email') {
-      toast.success('Email activity recorded');
-    } else {
-      toast.success('Activity created successfully');
+      // Add email-specific data if this is an email activity
+      if (activityData.type === 'Email' && activityData.emailData) {
+        recordData.emailData = JSON.stringify({
+          to: activityData.emailData.to,
+          subject: activityData.emailData.subject,
+          body: activityData.emailData.body,
+          sentAt: activityData.emailData.sentAt || new Date().toISOString()
+        });
+      }
+
+      const params = {
+        records: [recordData]
+      };
+
+      const response = await apperClient.createRecord('app_Activity', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create activity ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          failedRecords.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+
+        if (successfulRecords.length > 0) {
+          // Customize success message for email activities
+          if (activityData.type === 'Email') {
+            toast.success('Email activity recorded');
+          } else {
+            toast.success('Activity created successfully');
+          }
+          return successfulRecords[0].data;
+        }
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating activity:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
-    
-    return { ...newActivity };
   },
 
   async update(id, updateData) {
-    await delay(500);
-    
-    const activityId = parseInt(id);
-    const index = activities.findIndex(a => a.Id === activityId);
-    
-    if (index === -1) {
-      throw new Error('Activity not found');
+    try {
+      if (updateData.description && !updateData.description.trim()) {
+        throw new Error('Description cannot be empty');
+      }
+
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const recordData = {
+        Id: parseInt(id),
+        updatedAt: new Date().toISOString()
+      };
+
+      // Add fields that are being updated
+      if (updateData.Name) recordData.Name = updateData.Name;
+      if (updateData.contactId) recordData.contactId = parseInt(updateData.contactId);
+      if (updateData.type) recordData.type = updateData.type;
+      if (updateData.date) recordData.date = updateData.date;
+      if (updateData.description) recordData.description = updateData.description.trim();
+      if (updateData.emailData) recordData.emailData = JSON.stringify(updateData.emailData);
+
+      const params = {
+        records: [recordData]
+      };
+
+      const response = await apperClient.updateRecord('app_Activity', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update activity ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+
+        if (successfulUpdates.length > 0) {
+          toast.success('Activity updated successfully');
+          return successfulUpdates[0].data;
+        }
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating activity:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
-
-    if (updateData.description && !updateData.description.trim()) {
-      throw new Error('Description cannot be empty');
-    }
-
-    const updatedActivity = {
-      ...activities[index],
-      ...updateData,
-      Id: activityId, // Ensure ID doesn't change
-      updatedAt: new Date().toISOString()
-    };
-
-    activities[index] = updatedActivity;
-    toast.success('Activity updated successfully');
-    return { ...updatedActivity };
   },
 
   async delete(id) {
-    await delay(300);
-    
-    const activityId = parseInt(id);
-    const index = activities.findIndex(a => a.Id === activityId);
-    
-    if (index === -1) {
-      throw new Error('Activity not found');
-    }
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
 
-    const deletedActivity = activities.splice(index, 1)[0];
-    toast.success('Activity deleted successfully');
-    return { ...deletedActivity };
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
+
+      const response = await apperClient.deleteRecord('app_Activity', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulDeletions = response.results.filter(result => result.success);
+        const failedDeletions = response.results.filter(result => !result.success);
+
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete activity ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
+          failedDeletions.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+        }
+
+        if (successfulDeletions.length > 0) {
+          toast.success('Activity deleted successfully');
+          return true;
+        }
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting activity:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
+    }
   }
 };
 

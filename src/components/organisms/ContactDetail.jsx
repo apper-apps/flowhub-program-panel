@@ -32,9 +32,9 @@ const [isDeleting, setIsDeleting] = useState(false);
     companyId: contact.companyId || ""
   });
 
-  const getCompanyName = (companyId) => {
+const getCompanyName = (companyId) => {
     const company = companies.find(c => c.Id === companyId);
-    return company ? company.name : "No company assigned";
+    return company ? company.Name : "No company assigned";
   };
 
   const handleChange = (e) => {
@@ -80,7 +80,7 @@ const [isDeleting, setIsDeleting] = useState(false);
 
 const handleCancel = () => {
     setFormData({
-      name: contact.name || "",
+      name: contact.Name || "",
       email: contact.email || "",
       phone: contact.phone || "",
       jobTitle: contact.jobTitle || "",

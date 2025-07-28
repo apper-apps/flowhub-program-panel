@@ -57,37 +57,41 @@ const Dashboard = () => {
     return filtered;
 }, [allActivities, startDate, endDate]);
 
-  const handleAddContact = async (contactData) => {
+const handleAddContact = async (contactData) => {
     try {
       const newContact = await contactService.create(contactData);
-      setContacts(prev => [...prev, newContact]);
-      setShowContactModal(false);
-      toast.success('Contact added successfully!');
-      
-      // Reload dashboard data to update stats
-      await loadDashboardData();
+      if (newContact) {
+        setContacts(prev => [...prev, newContact]);
+        setShowContactModal(false);
+        toast.success('Contact added successfully!');
+        
+        // Reload dashboard data to update stats
+        await loadDashboardData();
+      }
     } catch (error) {
       toast.error('Failed to add contact. Please try again.');
       throw error;
     }
   };
 
-  const handleAddCompany = async (companyData) => {
+const handleAddCompany = async (companyData) => {
     try {
       const newCompany = await companyService.create(companyData);
-      setCompanies(prev => [...prev, newCompany]);
-      setShowCompanyModal(false);
-      toast.success('Company added successfully!');
-      
-      // Reload dashboard data to update stats
-      await loadDashboardData();
+      if (newCompany) {
+        setCompanies(prev => [...prev, newCompany]);
+        setShowCompanyModal(false);
+        toast.success('Company added successfully!');
+        
+        // Reload dashboard data to update stats
+        await loadDashboardData();
+      }
     } catch (error) {
       toast.error('Failed to add company. Please try again.');
       throw error;
     }
   };
 
-  const loadDashboardData = async () => {
+const loadDashboardData = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -102,20 +106,20 @@ const Dashboard = () => {
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       
-      const recentContacts = contacts.filter(contact => 
+      const recentContacts = (contacts || []).filter(contact => 
         new Date(contact.createdAt) > oneWeekAgo
       );
 
       // Calculate contacts by status
-      const statusBreakdown = contacts.reduce((acc, contact) => {
+      const statusBreakdown = (contacts || []).reduce((acc, contact) => {
         const status = contact.status || 'Lead';
         acc[status] = (acc[status] || 0) + 1;
         return acc;
       }, {});
       
       setStats({
-        totalContacts: contacts.length,
-        totalCompanies: companies.length,
+        totalContacts: (contacts || []).length,
+        totalCompanies: (companies || []).length,
         recentContactsCount: recentContacts.length,
         contactsByStatus: {
           Lead: statusBreakdown.Lead || 0,
@@ -125,7 +129,7 @@ const Dashboard = () => {
         }
       });
 
-      setAllActivities(activities);
+      setAllActivities(activities || []);
       
     } catch (err) {
       setError(err.message || "Failed to load dashboard data");

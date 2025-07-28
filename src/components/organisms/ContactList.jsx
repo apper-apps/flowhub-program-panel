@@ -83,11 +83,10 @@ const filteredContacts = useMemo(() => {
     }
   };
 
-  const getCompanyName = (companyId) => {
+const getCompanyName = (companyId) => {
     const company = companies.find(c => c.Id === companyId);
-    return company ? company.name : "—";
+    return company ? company.Name : "—";
   };
-
   if (loading) {
     return <Loading variant="table" />;
   }

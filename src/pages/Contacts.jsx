@@ -17,7 +17,7 @@ const Contacts = () => {
   const [selectedContact, setSelectedContact] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-  const loadContacts = async () => {
+const loadContacts = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -27,8 +27,8 @@ const Contacts = () => {
         companyService.getAll()
       ]);
       
-      setContacts(contactsData);
-      setCompanies(companiesData);
+      setContacts(contactsData || []);
+      setCompanies(companiesData || []);
     } catch (err) {
       setError(err.message || "Failed to load contacts");
     } finally {
@@ -36,12 +36,14 @@ const Contacts = () => {
     }
   };
 
-const handleAddContact = async (contactData) => {
+  const handleAddContact = async (contactData) => {
     try {
       const newContact = await contactService.create(contactData);
-      setContacts(prev => [...prev, newContact]);
-      setIsAddModalOpen(false);
-      toast.success("Contact added successfully!");
+      if (newContact) {
+        setContacts(prev => [...prev, newContact]);
+        setIsAddModalOpen(false);
+        toast.success("Contact added successfully!");
+      }
     } catch (err) {
       console.error("Failed to add contact:", err);
       toast.error(err.message || "Failed to add contact");
@@ -57,8 +59,10 @@ const handleAddContact = async (contactData) => {
   const handleUpdateContact = async (id, updateData) => {
     try {
       const updatedContact = await contactService.update(id, updateData);
-      setContacts(prev => prev.map(c => c.Id === id ? updatedContact : c));
-      setSelectedContact(updatedContact);
+      if (updatedContact) {
+        setContacts(prev => prev.map(c => c.Id === id ? updatedContact : c));
+        setSelectedContact(updatedContact);
+      }
     } catch (err) {
       throw new Error(err.message || "Failed to update contact");
     }
@@ -66,15 +70,17 @@ const handleAddContact = async (contactData) => {
 
   const handleDeleteContact = async (id) => {
     try {
-      await contactService.delete(id);
-      setContacts(prev => prev.filter(c => c.Id !== id));
-      setIsDetailModalOpen(false);
-      setSelectedContact(null);
+      const success = await contactService.delete(id);
+      if (success) {
+        setContacts(prev => prev.filter(c => c.Id !== id));
+        setIsDetailModalOpen(false);
+        setSelectedContact(null);
+        toast.success("Contact deleted successfully!");
+      }
     } catch (err) {
       throw new Error(err.message || "Failed to delete contact");
     }
-};
-
+  };
   const handleExportContacts = (contactsToExport) => {
     exportService.exportContacts(contactsToExport, companies);
   };
