@@ -1,0 +1,37 @@
+[
+  {
+    "Id": 1,
+    "name": "TechCorp Solutions",
+    "industry": "Technology",
+    "createdAt": "2024-01-10T08:00:00Z",
+    "updatedAt": "2024-01-10T08:00:00Z"
+  },
+  {
+    "Id": 2,
+    "name": "HealthPlus Medical",
+    "industry": "Healthcare",
+    "createdAt": "2024-01-11T10:30:00Z",
+    "updatedAt": "2024-01-11T10:30:00Z"
+  },
+  {
+    "Id": 3,
+    "name": "Global Finance Group",
+    "industry": "Finance",
+    "createdAt": "2024-01-12T14:15:00Z",
+    "updatedAt": "2024-01-12T14:15:00Z"
+  },
+  {
+    "Id": 4,
+    "name": "EduTech University",
+    "industry": "Education",
+    "createdAt": "2024-01-13T09:45:00Z",
+    "updatedAt": "2024-01-13T09:45:00Z"
+  },
+  {
+    "Id": 5,
+    "name": "Premier Manufacturing",
+    "industry": "Manufacturing",
+    "createdAt": "2024-01-14T16:20:00Z",
+    "updatedAt": "2024-01-14T16:20:00Z"
+  }
+]
