@@ -4,6 +4,8 @@
     "name": "Sarah Johnson",
     "email": "sarah.johnson@techcorp.com",
     "phone": "(555) 123-4567",
+    "jobTitle": "Senior Software Engineer",
+    "notes": "Lead developer for the new CRM project. Prefers email communication.",
     "companyId": 1,
     "createdAt": "2024-01-15T10:30:00Z",
     "updatedAt": "2024-01-15T10:30:00Z"
@@ -13,6 +15,8 @@
     "name": "Michael Chen",
     "email": "m.chen@healthplus.org",
     "phone": "(555) 234-5678",
+    "jobTitle": "Product Manager",
+    "notes": "Responsible for healthcare solutions. Very detail-oriented.",
     "companyId": 2,
     "createdAt": "2024-01-16T14:20:00Z",
     "updatedAt": "2024-01-16T14:20:00Z"
@@ -22,6 +26,8 @@
     "name": "Emily Rodriguez",
     "email": "emily.r@financegroup.com",
     "phone": "(555) 345-6789",
+    "jobTitle": "Financial Analyst",
+    "notes": "Handles budget approvals. Best to contact between 9-11 AM.",
     "companyId": 3,
     "createdAt": "2024-01-17T09:15:00Z",
     "updatedAt": "2024-01-17T09:15:00Z"
@@ -31,6 +37,8 @@
     "name": "David Wilson",
     "email": "david.wilson@gmail.com",
     "phone": "(555) 456-7890",
+    "jobTitle": "Freelance Consultant",
+    "notes": "Independent contractor. Available for short-term projects.",
     "companyId": null,
     "createdAt": "2024-01-18T16:45:00Z",
     "updatedAt": "2024-01-18T16:45:00Z"
@@ -40,6 +48,8 @@
     "name": "Jessica Brown",
     "email": "j.brown@edutech.edu",
     "phone": "(555) 567-8901",
+    "jobTitle": "Education Technology Specialist",
+    "notes": "Focuses on K-12 solutions. Interested in AI-powered learning tools.",
     "companyId": 4,
     "createdAt": "2024-01-19T11:30:00Z",
     "updatedAt": "2024-01-19T11:30:00Z"
@@ -49,6 +59,8 @@
     "name": "Robert Taylor",
     "email": "rob.taylor@manufacturing.com",
     "phone": "(555) 678-9012",
+    "jobTitle": "Operations Manager",
+    "notes": "Oversees production line efficiency. Key decision maker for equipment purchases.",
     "companyId": 5,
     "createdAt": "2024-01-20T13:20:00Z",
     "updatedAt": "2024-01-20T13:20:00Z"

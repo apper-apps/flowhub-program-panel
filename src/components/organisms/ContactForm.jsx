@@ -5,12 +5,14 @@ import Select from "@/components/atoms/Select";
 import ApperIcon from "@/components/ApperIcon";
 import { toast } from "react-toastify";
 
-const ContactForm = ({ onSubmit, onCancel, companies = [] }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    companyId: ""
+const ContactForm = ({ onSubmit, onCancel, companies = [], contact = null }) => {
+const [formData, setFormData] = useState({
+    name: contact?.name || "",
+    email: contact?.email || "",
+    phone: contact?.phone || "",
+    jobTitle: contact?.jobTitle || "",
+    notes: contact?.notes || "",
+    companyId: contact?.companyId || ""
   });
   
   const [errors, setErrors] = useState({});
@@ -58,23 +60,27 @@ const ContactForm = ({ onSubmit, onCancel, companies = [] }) => {
     setIsSubmitting(true);
     
     try {
-      await onSubmit({
+await onSubmit({
         ...formData,
         companyId: formData.companyId || null
       });
       
-      toast.success("Contact added successfully!");
+      toast.success(contact ? "Contact updated successfully!" : "Contact added successfully!");
       
-      // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        companyId: ""
-      });
+      // Reset form only if adding new contact
+      if (!contact) {
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          jobTitle: "",
+          notes: "",
+          companyId: ""
+        });
+      }
       
     } catch (error) {
-      toast.error("Failed to add contact. Please try again.");
+      toast.error(contact ? "Failed to update contact. Please try again." : "Failed to add contact. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -114,6 +120,28 @@ const ContactForm = ({ onSubmit, onCancel, companies = [] }) => {
         required
       />
       
+<Input
+        label="Job Title (Optional)"
+        name="jobTitle"
+        value={formData.jobTitle}
+        onChange={handleChange}
+        placeholder="e.g. Software Engineer, Marketing Manager"
+      />
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">
+          Notes (Optional)
+        </label>
+        <textarea
+          name="notes"
+          value={formData.notes}
+          onChange={handleChange}
+          placeholder="Additional notes about this contact..."
+          rows={3}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+        />
+      </div>
+
       {companies.length > 0 && (
         <Select
           label="Company (Optional)"
@@ -144,17 +172,17 @@ const ContactForm = ({ onSubmit, onCancel, companies = [] }) => {
           type="submit"
           variant="primary"
           disabled={isSubmitting}
-          className="min-w-[120px]"
+className="min-w-[120px]"
         >
           {isSubmitting ? (
             <>
               <ApperIcon name="Loader2" size={16} className="mr-2 animate-spin" />
-              Adding...
+              {contact ? "Updating..." : "Adding..."}
             </>
           ) : (
             <>
-              <ApperIcon name="Plus" size={16} className="mr-2" />
-              Add Contact
+              <ApperIcon name={contact ? "Save" : "Plus"} size={16} className="mr-2" />
+              {contact ? "Update Contact" : "Add Contact"}
             </>
           )}
         </Button>
@@ -162,5 +190,4 @@ const ContactForm = ({ onSubmit, onCancel, companies = [] }) => {
     </form>
   );
 };
-
 export default ContactForm;

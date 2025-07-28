@@ -1,0 +1,287 @@
+import React, { useState } from "react";
+import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
+import Select from "@/components/atoms/Select";
+import ApperIcon from "@/components/ApperIcon";
+import { toast } from "react-toastify";
+
+const ContactDetail = ({ contact, companies = [], onUpdate, onDelete, onClose }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [formData, setFormData] = useState({
+    name: contact.name || "",
+    email: contact.email || "",
+    phone: contact.phone || "",
+    jobTitle: contact.jobTitle || "",
+    notes: contact.notes || "",
+    companyId: contact.companyId || ""
+  });
+
+  const getCompanyName = (companyId) => {
+    const company = companies.find(c => c.Id === companyId);
+    return company ? company.name : "No company assigned";
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleUpdate = async () => {
+    try {
+      setIsUpdating(true);
+      await onUpdate(contact.Id, {
+        ...formData,
+        companyId: formData.companyId || null
+      });
+      setIsEditing(false);
+      toast.success("Contact updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update contact. Please try again.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this contact? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await onDelete(contact.Id);
+      toast.success("Contact deleted successfully!");
+      onClose();
+    } catch (error) {
+      toast.error("Failed to delete contact. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      name: contact.name || "",
+      email: contact.email || "",
+      phone: contact.phone || "",
+      jobTitle: contact.jobTitle || "",
+      notes: contact.notes || "",
+      companyId: contact.companyId || ""
+    });
+    setIsEditing(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
+            <span className="text-white font-semibold text-lg">
+              {contact.name.charAt(0).toUpperCase()}
+            </span>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">{contact.name}</h3>
+            <p className="text-sm text-gray-600">{contact.jobTitle || "No job title"}</p>
+          </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          {!isEditing ? (
+            <>
+              <Button
+                onClick={() => setIsEditing(true)}
+                variant="outline"
+                size="sm"
+              >
+                <ApperIcon name="Edit" size={16} className="mr-2" />
+                Edit
+              </Button>
+              <Button
+                onClick={handleDelete}
+                variant="outline"
+                size="sm"
+                className="text-red-600 border-red-200 hover:bg-red-50"
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <ApperIcon name="Loader2" size={16} className="mr-2 animate-spin" />
+                ) : (
+                  <ApperIcon name="Trash2" size={16} className="mr-2" />
+                )}
+                {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={handleCancel}
+                variant="outline"
+                size="sm"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleUpdate}
+                variant="primary"
+                size="sm"
+                disabled={isUpdating}
+              >
+                {isUpdating ? (
+                  <>
+                    <ApperIcon name="Loader2" size={16} className="mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <ApperIcon name="Save" size={16} className="mr-2" />
+                    Save Changes
+                  </>
+                )}
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Contact Details */}
+      <div className="space-y-4">
+        {isEditing ? (
+          // Edit Form
+          <div className="space-y-4">
+            <Input
+              label="Full Name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+            
+            <Input
+              label="Email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+            
+            <Input
+              label="Phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
+            
+            <Input
+              label="Job Title"
+              name="jobTitle"
+              value={formData.jobTitle}
+              onChange={handleChange}
+              placeholder="e.g. Software Engineer, Marketing Manager"
+            />
+            
+            {companies.length > 0 && (
+              <Select
+                label="Company"
+                name="companyId"
+                value={formData.companyId}
+                onChange={handleChange}
+              >
+                <option value="">No company</option>
+                {companies.map((company) => (
+                  <option key={company.Id} value={company.Id}>
+                    {company.name}
+                  </option>
+                ))}
+              </Select>
+            )}
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Notes
+              </label>
+              <textarea
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange}
+                placeholder="Additional notes about this contact..."
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+              />
+            </div>
+          </div>
+        ) : (
+          // View Mode
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <div className="flex items-center space-x-2">
+                  <ApperIcon name="Mail" size={16} className="text-gray-400" />
+                  <a 
+                    href={`mailto:${contact.email}`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    {contact.email}
+                  </a>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <div className="flex items-center space-x-2">
+                  <ApperIcon name="Phone" size={16} className="text-gray-400" />
+                  <a 
+                    href={`tel:${contact.phone}`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    {contact.phone}
+                  </a>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                <div className="flex items-center space-x-2">
+                  <ApperIcon name="Briefcase" size={16} className="text-gray-400" />
+                  <span className="text-gray-900">{contact.jobTitle || "Not specified"}</span>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                <div className="flex items-center space-x-2">
+                  <ApperIcon name="Building" size={16} className="text-gray-400" />
+                  <span className="text-gray-900">{getCompanyName(contact.companyId)}</span>
+                </div>
+              </div>
+            </div>
+            
+            {contact.notes && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-gray-900 whitespace-pre-wrap">{contact.notes}</p>
+                </div>
+              </div>
+            )}
+            
+            <div className="text-xs text-gray-500 border-t pt-4">
+              <div>Created: {new Date(contact.createdAt).toLocaleDateString()}</div>
+              <div>Last updated: {new Date(contact.updatedAt).toLocaleDateString()}</div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ContactDetail;

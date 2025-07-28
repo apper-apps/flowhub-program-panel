@@ -12,7 +12,8 @@ const ContactList = ({
   loading = false, 
   error = null, 
   onRetry,
-  onAddContact 
+  onAddContact,
+  onContactSelect 
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -118,10 +119,11 @@ const ContactList = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {filteredContacts.map((contact, index) => (
+{filteredContacts.map((contact, index) => (
                   <tr 
                     key={contact.Id} 
-                    className={`hover:bg-gray-50 transition-colors duration-150 ${
+                    onClick={() => onContactSelect && onContactSelect(contact)}
+                    className={`hover:bg-gray-50 transition-colors duration-150 cursor-pointer ${
                       index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
                     }`}
                   >

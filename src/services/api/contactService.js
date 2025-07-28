@@ -25,7 +25,11 @@ export const contactService = {
     const maxId = contacts.length > 0 ? Math.max(...contacts.map(c => c.Id)) : 0;
     const newContact = {
       Id: maxId + 1,
-      ...contactData,
+      name: contactData.name || "",
+      email: contactData.email || "",
+      phone: contactData.phone || "",
+      jobTitle: contactData.jobTitle || "",
+      notes: contactData.notes || "",
       companyId: contactData.companyId ? parseInt(contactData.companyId) : null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -45,7 +49,12 @@ export const contactService = {
     
     contacts[index] = {
       ...contacts[index],
-      ...updateData,
+      name: updateData.name || contacts[index].name,
+      email: updateData.email || contacts[index].email,
+      phone: updateData.phone || contacts[index].phone,
+      jobTitle: updateData.jobTitle || contacts[index].jobTitle,
+      notes: updateData.notes || contacts[index].notes,
+      companyId: updateData.companyId ? parseInt(updateData.companyId) : null,
       Id: parseInt(id),
       updatedAt: new Date().toISOString()
     };

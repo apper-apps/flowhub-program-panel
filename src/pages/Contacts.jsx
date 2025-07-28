@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ContactList from "@/components/organisms/ContactList";
 import ContactForm from "@/components/organisms/ContactForm";
+import ContactDetail from "@/components/organisms/ContactDetail";
 import Modal from "@/components/molecules/Modal";
 import { contactService } from "@/services/api/contactService";
 import { companyService } from "@/services/api/companyService";
@@ -11,6 +12,8 @@ const Contacts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const loadContacts = async () => {
     try {
@@ -41,6 +44,37 @@ const Contacts = () => {
     }
   };
 
+  const handleContactSelect = (contact) => {
+    setSelectedContact(contact);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleUpdateContact = async (id, updateData) => {
+    try {
+      const updatedContact = await contactService.update(id, updateData);
+      setContacts(prev => prev.map(c => c.Id === id ? updatedContact : c));
+      setSelectedContact(updatedContact);
+    } catch (err) {
+      throw new Error(err.message || "Failed to update contact");
+    }
+  };
+
+  const handleDeleteContact = async (id) => {
+    try {
+      await contactService.delete(id);
+      setContacts(prev => prev.filter(c => c.Id !== id));
+      setIsDetailModalOpen(false);
+      setSelectedContact(null);
+    } catch (err) {
+      throw new Error(err.message || "Failed to delete contact");
+    }
+  };
+
+  const closeDetailModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedContact(null);
+  };
+
   useEffect(() => {
     loadContacts();
   }, []);
@@ -54,6 +88,7 @@ const Contacts = () => {
         error={error}
         onRetry={loadContacts}
         onAddContact={() => setIsAddModalOpen(true)}
+        onContactSelect={handleContactSelect}
       />
 
       <Modal
@@ -67,6 +102,23 @@ const Contacts = () => {
           onSubmit={handleAddContact}
           onCancel={() => setIsAddModalOpen(false)}
         />
+      </Modal>
+
+      <Modal
+        isOpen={isDetailModalOpen}
+        onClose={closeDetailModal}
+        title="Contact Details"
+        size="lg"
+      >
+        {selectedContact && (
+          <ContactDetail
+            contact={selectedContact}
+            companies={companies}
+            onUpdate={handleUpdateContact}
+            onDelete={handleDeleteContact}
+            onClose={closeDetailModal}
+          />
+        )}
       </Modal>
     </>
   );
