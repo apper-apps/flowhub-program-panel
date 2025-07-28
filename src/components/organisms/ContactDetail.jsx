@@ -3,11 +3,12 @@ import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Select from "@/components/atoms/Select";
 import ApperIcon from "@/components/ApperIcon";
+import EmailComposeModal from "@/components/organisms/EmailComposeModal";
 import { toast } from "react-toastify";
 
 const ContactDetail = ({ contact, companies = [], onUpdate, onDelete, onClose }) => {
 const [isEditing, setIsEditing] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
   const [activities, setActivities] = useState([]);
@@ -20,6 +21,8 @@ const [isEditing, setIsEditing] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [isActivitySaving, setIsActivitySaving] = useState(false);
   const [isTaskSaving, setIsTaskSaving] = useState(false);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [isEmailSending, setIsEmailSending] = useState(false);
   const [formData, setFormData] = useState({
     name: contact.name || "",
     email: contact.email || "",
@@ -155,6 +158,38 @@ const loadActivities = async () => {
     }
   };
 
+const handleSendEmail = async (emailData) => {
+    setIsEmailSending(true);
+    
+    try {
+      const { activityService } = await import('@/services/api/activityService');
+      
+      // Create activity for the sent email
+      await activityService.create({
+        contactId: contact.Id,
+        type: 'email',
+        date: new Date().toISOString().split('T')[0],
+        description: `Email sent to ${emailData.to}\nSubject: ${emailData.subject}\n\n${emailData.body}`,
+        emailData: {
+          to: emailData.to,
+          subject: emailData.subject,
+          body: emailData.body,
+          sentAt: new Date().toISOString()
+        }
+      });
+      
+      // Reload activities to show the new email
+      await loadActivities();
+      
+      toast.success('Email sent successfully');
+    } catch (error) {
+      console.error('Error sending email:', error);
+      throw error; // Re-throw to let modal handle the error
+    } finally {
+      setIsEmailSending(false);
+    }
+  };
+
   const handleAddTask = () => {
     setEditingTask(null);
     setIsTaskFormOpen(true);
@@ -244,7 +279,16 @@ React.useEffect(() => {
         </div>
         <div className="flex items-center space-x-2">
           {!isEditing ? (
-            <>
+<>
+              <Button
+                onClick={() => setIsEmailModalOpen(true)}
+                variant="outline"
+                size="sm"
+                className="text-blue-600 border-blue-200 hover:bg-blue-50"
+              >
+                <ApperIcon name="Mail" size={16} className="mr-2" />
+                Email
+              </Button>
               <Button
                 onClick={() => setIsEditing(true)}
                 variant="outline"
@@ -645,8 +689,17 @@ React.useEffect(() => {
               );
             })}
           </div>
-        </div>
+</div>
       )}
+
+      {/* Email Compose Modal */}
+      <EmailComposeModal
+        isOpen={isEmailModalOpen}
+        onClose={() => setIsEmailModalOpen(false)}
+        contact={contact}
+        onSend={handleSendEmail}
+        isLoading={isEmailSending}
+      />
 
       {/* Task Form Modal */}
       {isTaskFormOpen && (

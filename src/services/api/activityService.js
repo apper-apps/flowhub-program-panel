@@ -31,11 +31,18 @@ const activityService = {
       .sort((a, b) => new Date(b.date) - new Date(a.date));
   },
 
-  async create(activityData) {
+async create(activityData) {
     await delay(500);
     
     if (!activityData.contactId || !activityData.type || !activityData.date || !activityData.description?.trim()) {
       throw new Error('Contact, type, date, and description are required');
+    }
+
+    // Additional validation for email activities
+    if (activityData.type === 'email') {
+      if (!activityData.emailData || !activityData.emailData.to || !activityData.emailData.subject) {
+        throw new Error('Email activities require recipient and subject information');
+      }
     }
 
     const maxId = activities.length > 0 ? Math.max(...activities.map(a => a.Id)) : 0;
@@ -49,8 +56,25 @@ const activityService = {
       updatedAt: new Date().toISOString()
     };
 
+    // Add email-specific data if this is an email activity
+    if (activityData.type === 'email' && activityData.emailData) {
+      newActivity.emailData = {
+        to: activityData.emailData.to,
+        subject: activityData.emailData.subject,
+        body: activityData.emailData.body,
+        sentAt: activityData.emailData.sentAt || new Date().toISOString()
+      };
+    }
+
     activities.push(newActivity);
-    toast.success('Activity created successfully');
+    
+    // Customize success message for email activities
+    if (activityData.type === 'email') {
+      toast.success('Email activity recorded');
+    } else {
+      toast.success('Activity created successfully');
+    }
+    
     return { ...newActivity };
   },
 
