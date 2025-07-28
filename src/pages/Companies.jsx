@@ -3,21 +3,28 @@ import CompanyList from "@/components/organisms/CompanyList";
 import CompanyForm from "@/components/organisms/CompanyForm";
 import Modal from "@/components/molecules/Modal";
 import { companyService } from "@/services/api/companyService";
-
+import { contactService } from "@/services/api/contactService";
 const Companies = () => {
 const [companies, setCompanies] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
+  
   const loadCompanies = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const companiesData = await companyService.getAll();
+const [companiesData, contactsData] = await Promise.all([
+        companyService.getAll(),
+        contactService.getAll()
+      ]);
+      
       setCompanies(companiesData);
+      setContacts(contactsData);
     } catch (err) {
       setError(err.message || "Failed to load companies");
     } finally {
@@ -57,6 +64,7 @@ const [companies, setCompanies] = useState([]);
     <>
 <CompanyList
         companies={companies}
+        contacts={contacts}
         loading={loading}
         error={error}
         onRetry={loadCompanies}

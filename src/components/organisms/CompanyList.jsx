@@ -5,9 +5,9 @@ import ApperIcon from "@/components/ApperIcon";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
-
 const CompanyList = ({ 
   companies = [], 
+  contacts = [],
   loading = false, 
   error = null, 
   onRetry,
@@ -26,8 +26,11 @@ const filteredCompanies = useMemo(() => {
       (company.website && company.website.toLowerCase().includes(query)) ||
       (company.phone && company.phone.toLowerCase().includes(query))
     );
-  }, [companies, searchQuery]);
+}, [companies, searchQuery]);
 
+  const getContactCount = (companyId) => {
+    return contacts.filter(contact => contact.companyId === companyId).length;
+  };
   if (loading) {
     return <Loading variant="table" />;
   }
@@ -102,11 +105,14 @@ const filteredCompanies = useMemo(() => {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Company
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Industry
                   </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Contacts
+                  </th>
                   <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Contact
+                    Contact Info
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Added
@@ -145,6 +151,17 @@ const filteredCompanies = useMemo(() => {
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                         {company.industry}
                       </span>
+                    </td>
+<td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <ApperIcon name="Users" size={14} className="mr-2 text-gray-400" />
+                        <span className="text-sm font-medium text-gray-900">
+                          {getContactCount(company.Id)}
+                        </span>
+                        <span className="text-xs text-gray-500 ml-1">
+                          {getContactCount(company.Id) === 1 ? 'contact' : 'contacts'}
+                        </span>
+                      </div>
                     </td>
                     <td className="hidden md:table-cell px-6 py-4">
                       <div className="space-y-1">
