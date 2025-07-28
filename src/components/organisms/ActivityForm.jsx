@@ -175,21 +175,21 @@ const ActivityForm = ({ activity, contactId, onSave, onCancel, isLoading = false
           )}
         </div>
 
-        <div className="flex gap-3 pt-4">
+<div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200">
           <Button
             type="submit"
             variant="primary"
             disabled={isLoading}
-            className="flex-1"
+            className="w-full sm:flex-1 min-h-[44px] order-1"
           >
             {isLoading ? (
               <>
-                <ApperIcon name="Loader2" size={16} className="animate-spin" />
+                <ApperIcon name="Loader2" size={16} className="mr-2 animate-spin" />
                 Saving...
               </>
             ) : (
               <>
-                <ApperIcon name="Save" size={16} />
+                <ApperIcon name="Save" size={16} className="mr-2" />
                 {activity ? 'Update Activity' : 'Create Activity'}
               </>
             )}
@@ -200,6 +200,7 @@ const ActivityForm = ({ activity, contactId, onSave, onCancel, isLoading = false
             variant="secondary"
             onClick={onCancel}
             disabled={isLoading}
+            className="w-full sm:w-auto min-h-[44px] order-2"
           >
             Cancel
           </Button>

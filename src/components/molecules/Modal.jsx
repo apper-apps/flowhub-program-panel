@@ -30,9 +30,9 @@ const Modal = ({
     };
   }, [isOpen, onClose]);
 
-  const sizeClasses = {
+const sizeClasses = {
     sm: "max-w-md",
-    md: "max-w-lg",
+    md: "max-w-lg", 
     lg: "max-w-2xl",
     xl: "max-w-4xl"
   };
@@ -42,7 +42,7 @@ const Modal = ({
   return createPortal(
     <AnimatePresence>
       <div className="fixed inset-0 z-50 overflow-y-auto">
-        <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div className="flex items-center justify-center min-h-screen p-4 text-center sm:block sm:p-0">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -57,17 +57,17 @@ const Modal = ({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className={`inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full ${sizeClasses[size]}`}
+            className={`inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full mx-auto ${sizeClasses[size]}`}
           >
             {title && (
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+              <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 pr-4">{title}</h3>
                 {showCloseButton && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={onClose}
-                    className="p-1"
+                    className="p-2 min-h-[44px] min-w-[44px] flex-shrink-0"
                   >
                     <ApperIcon name="X" size={20} />
                   </Button>
@@ -75,7 +75,7 @@ const Modal = ({
               </div>
             )}
             
-            <div className="px-6 py-4">
+            <div className="px-4 sm:px-6 py-4 max-h-[calc(100vh-8rem)] overflow-y-auto">
               {children}
             </div>
           </motion.div>

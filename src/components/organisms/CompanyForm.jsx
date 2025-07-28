@@ -151,12 +151,13 @@ if (formData.phone && !formData.phone.match(/^[+]?[1-9][\d]{0,15}$/)) {
         placeholder="Enter company address"
       />
       
-      <div className="flex items-center justify-end space-x-3 pt-4">
+<div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-6 border-t border-gray-200">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
           disabled={isSubmitting}
+          className="w-full sm:w-auto min-h-[44px] order-2 sm:order-1"
         >
           Cancel
         </Button>
@@ -165,9 +166,9 @@ if (formData.phone && !formData.phone.match(/^[+]?[1-9][\d]{0,15}$/)) {
           type="submit"
           variant="primary"
           disabled={isSubmitting}
-          className="min-w-[120px]"
+          className="w-full sm:w-auto min-w-[120px] min-h-[44px] order-1 sm:order-2"
         >
-{isSubmitting ? (
+          {isSubmitting ? (
             <>
               <ApperIcon name="Loader2" size={16} className="mr-2 animate-spin" />
               {initialData ? 'Updating...' : 'Adding...'}

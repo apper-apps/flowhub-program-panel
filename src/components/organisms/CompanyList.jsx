@@ -97,32 +97,32 @@ const statusOptions = [
     );
   }
 
-  return (
-<div className="space-y-6">
+return (
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Companies</h2>
-          <p className="text-gray-600">Manage your business relationships</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Companies</h2>
+          <p className="text-sm sm:text-base text-gray-600">Manage your business relationships</p>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
           <Button 
             onClick={() => onExportCompanies && onExportCompanies(filteredCompanies)} 
             variant="outline"
-            className="sm:w-auto"
+            className="w-full sm:w-auto min-h-[44px]"
           >
             <ApperIcon name="Download" size={16} className="mr-2" />
             Export CSV
           </Button>
-          <Button onClick={onAddCompany} variant="primary">
+          <Button onClick={onAddCompany} variant="primary" className="w-full sm:w-auto min-h-[44px]">
             <ApperIcon name="Plus" size={16} className="mr-2" />
             Add Company
           </Button>
         </div>
       </div>
 
-{/* Search and Filters */}
+      {/* Search and Filters */}
       <div className="space-y-4 w-full max-w-4xl">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
@@ -170,117 +170,201 @@ const statusOptions = [
           message={`No companies match "${searchQuery}". Try adjusting your search.`}
         />
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-<thead className="bg-gray-50 border-b border-gray-100">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Company
-                  </th>
-<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Industry
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Contacts
-                  </th>
-                  <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Contact Info
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Added
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-{filteredCompanies.map((company, index) => (
-                  <tr 
-                    key={company.Id} 
-                    className={`hover:bg-gray-50 transition-colors duration-150 ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
-                    }`}
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-accent rounded-lg flex items-center justify-center">
-                          <ApperIcon name="Building2" size={16} className="text-white" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-semibold text-gray-900">
-                            {company.name}
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden lg:block bg-white rounded-xl border border-gray-100 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-100">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Company
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Industry
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Contacts
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Contact Info
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Added
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {filteredCompanies.map((company, index) => (
+                    <tr 
+                      key={company.Id} 
+                      className={`hover:bg-gray-50 transition-colors duration-150 ${
+                        index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                      }`}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-accent rounded-lg flex items-center justify-center">
+                            <ApperIcon name="Building2" size={16} className="text-white" />
                           </div>
-                          {company.address && (
-                            <div className="text-xs text-gray-500 mt-1">
-                              {company.address}
+                          <div>
+                            <div className="text-sm font-semibold text-gray-900">
+                              {company.name}
+                            </div>
+                            {company.address && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                {company.address}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          {company.industry}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center">
+                          <ApperIcon name="Users" size={14} className="mr-2 text-gray-400" />
+                          <span className="text-sm font-medium text-gray-900">
+                            {getContactCount(company.Id)}
+                          </span>
+                          <span className="text-xs text-gray-500 ml-1">
+                            {getContactCount(company.Id) === 1 ? 'contact' : 'contacts'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="space-y-1">
+                          {company.website && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <ApperIcon name="Globe" size={12} className="mr-2" />
+                              <a 
+                                href={company.website} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 truncate max-w-[120px]"
+                              >
+                                {company.website.replace(/^https?:\/\//, '')}
+                              </a>
+                            </div>
+                          )}
+                          {company.phone && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <ApperIcon name="Phone" size={12} className="mr-2" />
+                              <span>{company.phone}</span>
                             </div>
                           )}
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        {company.industry}
-                      </span>
-                    </td>
-<td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <ApperIcon name="Users" size={14} className="mr-2 text-gray-400" />
-                        <span className="text-sm font-medium text-gray-900">
-                          {getContactCount(company.Id)}
-                        </span>
-                        <span className="text-xs text-gray-500 ml-1">
-                          {getContactCount(company.Id) === 1 ? 'contact' : 'contacts'}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="hidden md:table-cell px-6 py-4">
-                      <div className="space-y-1">
-                        {company.website && (
-                          <div className="flex items-center text-sm text-gray-600">
-                            <ApperIcon name="Globe" size={12} className="mr-2" />
-                            <a 
-                              href={company.website} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800 truncate max-w-[120px]"
-                            >
-                              {company.website.replace(/^https?:\/\//, '')}
-                            </a>
-                          </div>
-                        )}
-                        {company.phone && (
-                          <div className="flex items-center text-sm text-gray-600">
-                            <ApperIcon name="Phone" size={12} className="mr-2" />
-                            <span>{company.phone}</span>
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-600">
-                        {new Date(company.createdAt).toLocaleDateString()}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEditCompany && onEditCompany(company)}
-                        className="text-gray-600 hover:text-gray-900"
-                      >
-                        <ApperIcon name="Edit2" size={14} className="mr-1" />
-                        Edit
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-600">
+                          {new Date(company.createdAt).toLocaleDateString()}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onEditCompany && onEditCompany(company)}
+                          className="text-gray-600 hover:text-gray-900"
+                        >
+                          <ApperIcon name="Edit2" size={14} className="mr-1" />
+                          Edit
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+
+          {/* Mobile Card View */}
+          <div className="lg:hidden space-y-4">
+            {filteredCompanies.map((company) => (
+              <div 
+                key={company.Id}
+                className="bg-white rounded-xl border border-gray-100 p-4 hover:shadow-md transition-all duration-150"
+              >
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
+                      <div className="w-12 h-12 bg-gradient-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                        <ApperIcon name="Building2" size={20} className="text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 truncate">
+                          {company.name}
+                        </h3>
+                        <div className="flex items-center mt-1">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            {company.industry}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEditCompany && onEditCompany(company)}
+                      className="text-gray-600 hover:text-gray-900 flex-shrink-0 ml-2 min-h-[44px] min-w-[44px]"
+                    >
+                      <ApperIcon name="Edit2" size={16} />
+                    </Button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <div className="flex items-center text-gray-600">
+                      <ApperIcon name="Users" size={14} className="mr-2 flex-shrink-0" />
+                      <span>
+                        {getContactCount(company.Id)} {getContactCount(company.Id) === 1 ? 'contact' : 'contacts'}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center text-gray-600">
+                      <ApperIcon name="Calendar" size={14} className="mr-2 flex-shrink-0" />
+                      <span>{new Date(company.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    
+                    {company.website && (
+                      <div className="flex items-center text-gray-600 sm:col-span-2">
+                        <ApperIcon name="Globe" size={14} className="mr-2 flex-shrink-0" />
+                        <a 
+                          href={company.website} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 truncate"
+                        >
+                          {company.website.replace(/^https?:\/\//, '')}
+                        </a>
+                      </div>
+                    )}
+                    
+                    {company.phone && (
+                      <div className="flex items-center text-gray-600 sm:col-span-2">
+                        <ApperIcon name="Phone" size={14} className="mr-2 flex-shrink-0" />
+                        <span>{company.phone}</span>
+                      </div>
+                    )}
+                    
+                    {company.address && (
+                      <div className="flex items-start text-gray-600 sm:col-span-2">
+                        <ApperIcon name="MapPin" size={14} className="mr-2 flex-shrink-0 mt-0.5" />
+                        <span className="line-clamp-2">{company.address}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

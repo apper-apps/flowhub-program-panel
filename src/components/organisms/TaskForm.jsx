@@ -241,12 +241,13 @@ const TaskForm = ({ task, onSave, onCancel }) => {
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+<div className="flex flex-col sm:flex-row justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
         <Button
           type="button"
           variant="ghost"
           onClick={onCancel}
           disabled={isLoading}
+          className="w-full sm:w-auto min-h-[44px] order-2 sm:order-1"
         >
           Cancel
         </Button>
@@ -254,7 +255,7 @@ const TaskForm = ({ task, onSave, onCancel }) => {
           type="submit"
           variant="primary"
           disabled={isLoading}
-          className="flex items-center gap-2"
+          className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 order-1 sm:order-2"
         >
           {isLoading && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
           {task ? 'Update Task' : 'Create Task'}

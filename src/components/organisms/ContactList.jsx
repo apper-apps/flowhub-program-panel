@@ -114,32 +114,32 @@ const filteredContacts = useMemo(() => {
     );
   }
 
-  return (
+return (
     <div className="space-y-6">
-{/* Header */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Contacts</h2>
-          <p className="text-gray-600">Manage your customer contacts</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Contacts</h2>
+          <p className="text-sm sm:text-base text-gray-600">Manage your customer contacts</p>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
           <Button 
             onClick={() => onExportContacts && onExportContacts(filteredContacts)} 
             variant="outline"
-            className="sm:w-auto"
+            className="w-full sm:w-auto min-h-[44px]"
           >
             <ApperIcon name="Download" size={16} className="mr-2" />
             Export CSV
           </Button>
-          <Button onClick={onAddContact} variant="primary">
+          <Button onClick={onAddContact} variant="primary" className="w-full sm:w-auto min-h-[44px]">
             <ApperIcon name="Plus" size={16} className="mr-2" />
             Add Contact
           </Button>
         </div>
       </div>
 
-{/* Search and Filters */}
+      {/* Search and Filters */}
       <div className="space-y-4 w-full max-w-4xl">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
@@ -170,9 +170,6 @@ const filteredContacts = useMemo(() => {
           label="Filter by creation date"
         />
       </div>
-      {/* Add Contact Button */}
-      <div className="flex-shrink-0">
-      </div>
 
       {/* Results count */}
       <div className="text-sm text-gray-600">
@@ -190,76 +187,131 @@ const filteredContacts = useMemo(() => {
           message={`No contacts match "${searchQuery}". Try adjusting your search.`}
         />
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-100">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Contact
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Phone
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Company
-</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-{filteredContacts.map((contact, index) => (
-                  <tr 
-                    key={contact.Id} 
-                    onClick={() => onContactSelect && onContactSelect(contact)}
-                    className={`hover:bg-gray-50 transition-colors duration-150 cursor-pointer ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
-                    }`}
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center">
-                          <span className="text-white font-semibold text-sm">
-                            {contact.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <div className="text-sm font-semibold text-gray-900">
-                            {contact.name}
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-white rounded-xl border border-gray-100 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-100">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Contact
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Phone
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Company
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {filteredContacts.map((contact, index) => (
+                    <tr 
+                      key={contact.Id} 
+                      onClick={() => onContactSelect && onContactSelect(contact)}
+                      className={`hover:bg-gray-50 transition-colors duration-150 cursor-pointer ${
+                        index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                      }`}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center">
+                            <span className="text-white font-semibold text-sm">
+                              {contact.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div>
+                            <div className="text-sm font-semibold text-gray-900">
+                              {contact.name}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{contact.email}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{contact.phone}</div>
-                    </td>
-<td className="px-6 py-4">
-                      <div className="text-sm text-gray-600">
-                        {getCompanyName(contact.companyId)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900">{contact.email}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900">{contact.phone}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-600">
+                          {getCompanyName(contact.companyId)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={cn(
+                          "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
+                          getStatusBadgeColor(contact.status)
+                        )}>
+                          {contact.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {filteredContacts.map((contact) => (
+              <div 
+                key={contact.Id}
+                onClick={() => onContactSelect && onContactSelect(contact)}
+                className="bg-white rounded-xl border border-gray-100 p-4 hover:shadow-md transition-all duration-150 cursor-pointer active:scale-95"
+              >
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-semibold">
+                      {contact.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <h3 className="text-lg font-semibold text-gray-900 truncate">
+                        {contact.name}
+                      </h3>
                       <span className={cn(
-                        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
+                        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ml-2 flex-shrink-0",
                         getStatusBadgeColor(contact.status)
                       )}>
                         {contact.status}
                       </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                    
+                    <div className="mt-2 space-y-2">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <ApperIcon name="Mail" size={14} className="mr-2 flex-shrink-0" />
+                        <span className="truncate">{contact.email}</span>
+                      </div>
+                      
+                      <div className="flex items-center text-sm text-gray-600">
+                        <ApperIcon name="Phone" size={14} className="mr-2 flex-shrink-0" />
+                        <span>{contact.phone}</span>
+                      </div>
+                      
+                      {getCompanyName(contact.companyId) && (
+                        <div className="flex items-center text-sm text-gray-600">
+                          <ApperIcon name="Building2" size={14} className="mr-2 flex-shrink-0" />
+                          <span className="truncate">{getCompanyName(contact.companyId)}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        </>
       )}
     </div>
   );

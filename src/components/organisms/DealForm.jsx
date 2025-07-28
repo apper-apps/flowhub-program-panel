@@ -224,27 +224,29 @@ const DealForm = ({ onSubmit, onCancel, companies, contacts, initialData }) => {
         />
       </div>
 
-      <div className="flex justify-end space-x-3 pt-4">
+<div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
           disabled={isSubmitting}
+          className="w-full sm:w-auto min-h-[44px] order-2 sm:order-1"
         >
           Cancel
         </Button>
         <Button
           type="submit"
           disabled={isSubmitting}
+          className="w-full sm:w-auto min-h-[44px] order-1 sm:order-2"
         >
           {isSubmitting ? (
             <>
-              <ApperIcon name="Loader2" size={16} className="animate-spin" />
+              <ApperIcon name="Loader2" size={16} className="mr-2 animate-spin" />
               {initialData ? 'Updating...' : 'Creating...'}
             </>
           ) : (
             <>
-              <ApperIcon name="Save" size={16} />
+              <ApperIcon name="Save" size={16} className="mr-2" />
               {initialData ? 'Update Deal' : 'Create Deal'}
             </>
           )}
