@@ -5,8 +5,8 @@ const Loading = ({ variant = "default", className = "" }) => {
     return (
       <div className={`space-y-4 ${className}`}>
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex items-center space-x-4 p-4 bg-white rounded-lg border border-gray-100">
-            <div className="shimmer h-10 w-10 rounded-full bg-gray-200"></div>
+<div key={i} className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-lg border border-gray-100/50 shadow-sm">
+            <div className="shimmer h-10 w-10 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200"></div>
             <div className="flex-1 space-y-2">
               <div className="shimmer h-4 bg-gray-200 rounded w-3/4"></div>
               <div className="shimmer h-3 bg-gray-200 rounded w-1/2"></div>
@@ -24,7 +24,7 @@ const Loading = ({ variant = "default", className = "" }) => {
         {[...Array(3)].map((_, i) => (
           <div key={i} className="bg-white rounded-xl border border-gray-100 p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="shimmer h-8 w-8 rounded-lg bg-gray-200"></div>
+<div className="shimmer h-8 w-8 rounded-lg bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200"></div>
               <div className="shimmer h-4 w-16 bg-gray-200 rounded"></div>
             </div>
             <div className="space-y-2">
@@ -39,7 +39,7 @@ const Loading = ({ variant = "default", className = "" }) => {
 
   return (
     <div className={`flex items-center justify-center p-8 ${className}`}>
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary shadow-lg"></div>
     </div>
   );
 };

@@ -98,11 +98,11 @@ const Dashboard = () => {
     loadDashboardData();
   }, []);
 
-  if (loading) {
+if (loading) {
     return <Loading variant="cards" />;
   }
 
-  if (error) {
+if (error) {
     return (
       <Error
         title="Failed to load dashboard"
@@ -113,28 +113,29 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-8">
+<div className="space-y-8">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-primary via-secondary to-accent rounded-xl p-8 text-white relative overflow-hidden">
+      <div className="bg-gradient-to-r from-primary via-secondary to-accent rounded-xl p-8 text-white relative overflow-hidden shadow-2xl">
         <div className="relative z-10">
           <div className="flex items-center space-x-3 mb-4">
-            <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
+            <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm shadow-lg">
               <ApperIcon name="Zap" size={24} className="text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Welcome to FlowHub CRM</h1>
-              <p className="text-white/90">Manage your customer relationships efficiently</p>
+              <h1 className="text-2xl font-bold font-display tracking-tight">Welcome to FlowHub CRM</h1>
+              <p className="text-white/90 font-body">Manage your customer relationships efficiently</p>
             </div>
           </div>
-          <p className="text-lg text-white/90 max-w-2xl">
+          <p className="text-lg text-white/90 max-w-2xl font-body leading-relaxed">
             Your central hub for managing contacts, companies, and building stronger business relationships. 
             Get insights into your customer base and streamline your sales process.
           </p>
         </div>
         
-        {/* Background decoration */}
-        <div className="absolute -top-4 -right-4 w-32 h-32 bg-white/10 rounded-full"></div>
-        <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-white/5 rounded-full"></div>
+        {/* Enhanced background decoration */}
+        <div className="absolute -top-4 -right-4 w-32 h-32 bg-white/10 rounded-full animate-pulse"></div>
+        <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-white/5 rounded-full animate-pulse delay-75"></div>
+        <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-white/5 rounded-full animate-pulse delay-150"></div>
       </div>
 
       {/* Stats Cards */}
@@ -177,22 +178,24 @@ const Dashboard = () => {
       </div>
 
       {/* Contacts by Status */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6">
+<div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100/50 p-6 shadow-lg">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Contacts by Status</h3>
-          <ApperIcon name="PieChart" size={20} className="text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900 font-display">Contacts by Status</h3>
+          <div className="p-2 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg">
+            <ApperIcon name="PieChart" size={20} className="text-gray-600" />
+          </div>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Status Chart */}
           <div className="flex items-center justify-center">
             <div className="relative w-48 h-48">
-              {/* Simple donut chart using CSS */}
-              <div className="w-full h-full rounded-full bg-gradient-to-r from-blue-400 via-purple-400 via-green-400 to-orange-400 p-2">
-                <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+              {/* Enhanced donut chart using CSS */}
+              <div className="w-full h-full rounded-full bg-gradient-to-r from-blue-400 via-purple-400 via-green-400 to-orange-400 p-2 shadow-lg">
+                <div className="w-full h-full rounded-full bg-white flex items-center justify-center shadow-inner">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900">{stats.totalContacts}</div>
-                    <div className="text-sm text-gray-600">Total Contacts</div>
+                    <div className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent font-display">{stats.totalContacts}</div>
+                    <div className="text-sm text-gray-600 font-body">Total Contacts</div>
                   </div>
                 </div>
               </div>
@@ -201,88 +204,88 @@ const Dashboard = () => {
 
           {/* Status Breakdown */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-lg border border-blue-200/50 shadow-sm hover:shadow-md transition-all duration-300">
               <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <span className="font-medium text-gray-900">Leads</span>
+                <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-sm"></div>
+                <span className="font-medium text-gray-900 font-body">Leads</span>
               </div>
-              <span className="text-blue-600 font-semibold">{stats.contactsByStatus.Lead}</span>
+              <span className="text-blue-600 font-semibold font-display">{stats.contactsByStatus.Lead}</span>
             </div>
             
-            <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-50 to-purple-100/50 rounded-lg border border-purple-200/50 shadow-sm hover:shadow-md transition-all duration-300">
               <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                <span className="font-medium text-gray-900">Prospects</span>
+                <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full shadow-sm"></div>
+                <span className="font-medium text-gray-900 font-body">Prospects</span>
               </div>
-              <span className="text-purple-600 font-semibold">{stats.contactsByStatus.Prospect}</span>
+              <span className="text-purple-600 font-semibold font-display">{stats.contactsByStatus.Prospect}</span>
             </div>
             
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-green-100/50 rounded-lg border border-green-200/50 shadow-sm hover:shadow-md transition-all duration-300">
               <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="font-medium text-gray-900">Customers</span>
+                <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-green-600 rounded-full shadow-sm"></div>
+                <span className="font-medium text-gray-900 font-body">Customers</span>
               </div>
-              <span className="text-green-600 font-semibold">{stats.contactsByStatus.Customer}</span>
+              <span className="text-green-600 font-semibold font-display">{stats.contactsByStatus.Customer}</span>
             </div>
             
-            <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-orange-100/50 rounded-lg border border-orange-200/50 shadow-sm hover:shadow-md transition-all duration-300">
               <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                <span className="font-medium text-gray-900">Closed</span>
+                <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full shadow-sm"></div>
+                <span className="font-medium text-gray-900 font-body">Closed</span>
               </div>
-              <span className="text-orange-600 font-semibold">{stats.contactsByStatus.Closed}</span>
+              <span className="text-orange-600 font-semibold font-display">{stats.contactsByStatus.Closed}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+<div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100/50 p-6 shadow-lg">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 font-display">Quick Actions</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <a 
             href="/contacts"
-            className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg hover:shadow-md transition-all duration-200 hover:scale-[1.02] group"
+            className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 hover:scale-[1.02] group border border-blue-100/50"
           >
-            <div className="p-2 bg-gradient-primary rounded-lg group-hover:scale-110 transition-transform duration-200">
+            <div className="p-2 bg-gradient-primary rounded-lg group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-primary/25">
               <ApperIcon name="Users" size={16} className="text-white" />
             </div>
             <div>
-              <p className="font-medium text-gray-900">View Contacts</p>
-              <p className="text-sm text-gray-600">Manage your contacts</p>
+              <p className="font-medium text-gray-900 font-body group-hover:text-primary transition-colors">View Contacts</p>
+              <p className="text-sm text-gray-600 font-body">Manage your contacts</p>
             </div>
           </a>
           
           <a 
             href="/companies"
-            className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg hover:shadow-md transition-all duration-200 hover:scale-[1.02] group"
+            className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 hover:scale-[1.02] group border border-purple-100/50"
           >
-            <div className="p-2 bg-gradient-accent rounded-lg group-hover:scale-110 transition-transform duration-200">
+            <div className="p-2 bg-gradient-accent rounded-lg group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-accent/25">
               <ApperIcon name="Building2" size={16} className="text-white" />
             </div>
             <div>
-              <p className="font-medium text-gray-900">View Companies</p>
-              <p className="text-sm text-gray-600">Manage companies</p>
+              <p className="font-medium text-gray-900 font-body group-hover:text-accent transition-colors">View Companies</p>
+              <p className="text-sm text-gray-600 font-body">Manage companies</p>
             </div>
           </a>
           
-          <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg hover:shadow-md transition-all duration-200 hover:scale-[1.02] group cursor-pointer">
-            <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg group-hover:scale-110 transition-transform duration-200">
+          <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg hover:shadow-xl hover:shadow-green-500/10 transition-all duration-300 hover:scale-[1.02] group cursor-pointer border border-green-100/50">
+            <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-green-500/25">
               <ApperIcon name="UserPlus" size={16} className="text-white" />
             </div>
             <div>
-              <p className="font-medium text-gray-900">Add Contact</p>
-              <p className="text-sm text-gray-600">Create new contact</p>
+              <p className="font-medium text-gray-900 font-body group-hover:text-green-600 transition-colors">Add Contact</p>
+              <p className="text-sm text-gray-600 font-body">Create new contact</p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg hover:shadow-md transition-all duration-200 hover:scale-[1.02] group cursor-pointer">
-            <div className="p-2 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg group-hover:scale-110 transition-transform duration-200">
+          <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 hover:scale-[1.02] group cursor-pointer border border-orange-100/50">
+            <div className="p-2 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-orange-500/25">
               <ApperIcon name="Plus" size={16} className="text-white" />
             </div>
             <div>
-              <p className="font-medium text-gray-900">Add Company</p>
-              <p className="text-sm text-gray-600">Create new company</p>
+              <p className="font-medium text-gray-900 font-body group-hover:text-orange-600 transition-colors">Add Company</p>
+              <p className="text-sm text-gray-600 font-body">Create new company</p>
             </div>
           </div>
         </div>
@@ -313,13 +316,13 @@ const Dashboard = () => {
         
         <div className="space-y-3">
           {filteredActivities.length > 0 ? (
-            filteredActivities.map((activity) => {
+filteredActivities.map((activity) => {
               const activityColors = {
-                call: { bg: 'bg-blue-50', dot: 'bg-blue-500', text: 'text-blue-600' },
-                email: { bg: 'bg-green-50', dot: 'bg-green-500', text: 'text-green-600' },
-                meeting: { bg: 'bg-purple-50', dot: 'bg-purple-500', text: 'text-purple-600' },
-                note: { bg: 'bg-orange-50', dot: 'bg-orange-500', text: 'text-orange-600' },
-                task: { bg: 'bg-red-50', dot: 'bg-red-500', text: 'text-red-600' }
+                call: { bg: 'bg-gradient-to-r from-blue-50 to-blue-100/50 border-blue-200/50', dot: 'bg-gradient-to-r from-blue-500 to-blue-600', text: 'text-blue-700' },
+                email: { bg: 'bg-gradient-to-r from-green-50 to-green-100/50 border-green-200/50', dot: 'bg-gradient-to-r from-green-500 to-green-600', text: 'text-green-700' },
+                meeting: { bg: 'bg-gradient-to-r from-purple-50 to-purple-100/50 border-purple-200/50', dot: 'bg-gradient-to-r from-purple-500 to-purple-600', text: 'text-purple-700' },
+                note: { bg: 'bg-gradient-to-r from-orange-50 to-orange-100/50 border-orange-200/50', dot: 'bg-gradient-to-r from-orange-500 to-orange-600', text: 'text-orange-700' },
+                task: { bg: 'bg-gradient-to-r from-red-50 to-red-100/50 border-red-200/50', dot: 'bg-gradient-to-r from-red-500 to-red-600', text: 'text-red-700' }
               };
               
               const colors = activityColors[activity.type] || activityColors.note;
@@ -330,32 +333,32 @@ const Dashboard = () => {
                 activityDate.toLocaleDateString();
 
               return (
-                <div key={activity.Id} className={`flex items-center space-x-3 p-3 ${colors.bg} rounded-lg`}>
-                  <div className={`w-2 h-2 ${colors.dot} rounded-full`}></div>
+                <div key={activity.Id} className={`flex items-center space-x-3 p-3 ${colors.bg} rounded-lg border shadow-sm hover:shadow-md transition-all duration-300`}>
+                  <div className={`w-2 h-2 ${colors.dot} rounded-full shadow-sm`}></div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900 capitalize">
+                    <p className={`text-sm font-medium ${colors.text} capitalize font-body`}>
                       {activity.type}: {activity.description}
                     </p>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-gray-600 font-body">
                       Contact ID: {activity.contactId}
                     </p>
                   </div>
-                  <span className="text-xs text-gray-500">{timeAgo}</span>
+                  <span className="text-xs text-gray-500 font-body">{timeAgo}</span>
                 </div>
               );
             })
           ) : (
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg border border-gray-200/50 shadow-sm">
               <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-gray-900 font-body">
                   {startDate || endDate ? 'No activities found in selected date range' : 'No recent activities'}
                 </p>
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-gray-600 font-body">
                   {startDate || endDate ? 'Try adjusting your date filter' : 'Activities will appear here once created'}
                 </p>
               </div>
-              <span className="text-xs text-gray-500">-</span>
+              <span className="text-xs text-gray-500 font-body">-</span>
             </div>
           )}
         </div>

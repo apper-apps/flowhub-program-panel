@@ -40,19 +40,19 @@ const TaskDetail = ({ task, onEdit, onDelete, onToggleStatus }) => {
     }
   };
 
-  const getPriorityColor = (priority) => {
+const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'High': return 'text-red-600 bg-red-50 border-red-200';
-      case 'Medium': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'Low': return 'text-green-600 bg-green-50 border-green-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+      case 'High': return 'text-red-700 bg-gradient-to-r from-red-50 to-red-100 border-red-200/50 shadow-red-500/10';
+      case 'Medium': return 'text-yellow-700 bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200/50 shadow-yellow-500/10';
+      case 'Low': return 'text-green-700 bg-gradient-to-r from-green-50 to-green-100 border-green-200/50 shadow-green-500/10';
+      default: return 'text-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200/50 shadow-gray-500/10';
     }
   };
 
   const getStatusColor = (status) => {
     return status === 'Completed' 
-      ? 'text-green-600 bg-green-50 border-green-200' 
-      : 'text-blue-600 bg-blue-50 border-blue-200';
+      ? 'text-green-700 bg-gradient-to-r from-green-50 to-green-100 border-green-200/50 shadow-green-500/10' 
+      : 'text-blue-700 bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200/50 shadow-blue-500/10';
   };
 
   const isOverdue = (dueDate, status) => {
@@ -99,12 +99,12 @@ const TaskDetail = ({ task, onEdit, onDelete, onToggleStatus }) => {
       <div className="flex items-start justify-between mb-6">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <button
+<button
               onClick={onToggleStatus}
-              className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+              className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all duration-300 ${
                 task.status === 'Completed'
-                  ? 'bg-green-500 border-green-500 text-white'
-                  : 'border-gray-300 hover:border-green-500'
+                  ? 'bg-gradient-to-r from-green-500 to-green-600 border-green-500 text-white shadow-lg shadow-green-500/25'
+                  : 'border-gray-300 hover:border-green-500 hover:shadow-md hover:shadow-green-500/20'
               }`}
             >
               {task.status === 'Completed' && (
@@ -119,29 +119,29 @@ const TaskDetail = ({ task, onEdit, onDelete, onToggleStatus }) => {
           </div>
           
           <div className="flex items-center gap-3">
-            <span className={`px-3 py-1 text-sm font-medium rounded-full border ${getPriorityColor(task.priority)}`}>
+<span className={`px-3 py-1 text-sm font-medium rounded-full border shadow-sm ${getPriorityColor(task.priority)}`}>
               {task.priority} Priority
             </span>
-            <span className={`px-3 py-1 text-sm font-medium rounded-full border ${getStatusColor(task.status)}`}>
+            <span className={`px-3 py-1 text-sm font-medium rounded-full border shadow-sm ${getStatusColor(task.status)}`}>
               {task.status}
             </span>
             {isOverdue(task.dueDate, task.status) && (
-              <span className="px-3 py-1 text-sm font-medium rounded-full bg-red-100 text-red-800 border border-red-200">
+              <span className="px-3 py-1 text-sm font-medium rounded-full bg-gradient-to-r from-red-100 to-red-200 text-red-800 border border-red-200/50 shadow-sm shadow-red-500/10">
                 Overdue
               </span>
             )}
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={onEdit}>
+<div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={onEdit} className="hover:bg-primary/10 hover:text-primary transition-all duration-300">
             <ApperIcon name="Edit" size={16} />
           </Button>
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={onDelete}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="text-red-600 hover:text-red-700 hover:bg-red-50 transition-all duration-300"
           >
             <ApperIcon name="Trash2" size={16} />
           </Button>
@@ -168,8 +168,8 @@ const TaskDetail = ({ task, onEdit, onDelete, onToggleStatus }) => {
                 name="Calendar" 
                 size={16} 
                 className={isOverdue(task.dueDate, task.status) ? 'text-red-500' : 'text-gray-400'} 
-              />
-              <span className={`font-medium ${
+/>
+              <span className={`font-medium font-body ${
                 isOverdue(task.dueDate, task.status) ? 'text-red-600' : 'text-gray-900'
               }`}>
                 {formatDate(task.dueDate)}
@@ -207,11 +207,11 @@ const TaskDetail = ({ task, onEdit, onDelete, onToggleStatus }) => {
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+<div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200/50">
         <Button
           variant={task.status === 'Completed' ? 'secondary' : 'primary'}
           onClick={onToggleStatus}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 shadow-lg hover:shadow-xl"
         >
           <ApperIcon 
             name={task.status === 'Completed' ? 'RotateCcw' : 'Check'} 
@@ -219,7 +219,7 @@ const TaskDetail = ({ task, onEdit, onDelete, onToggleStatus }) => {
           />
           {task.status === 'Completed' ? 'Mark Pending' : 'Mark Complete'}
         </Button>
-        <Button variant="secondary" onClick={onEdit}>
+        <Button variant="secondary" onClick={onEdit} className="hover:shadow-md">
           <ApperIcon name="Edit" size={16} className="mr-2" />
           Edit Task
         </Button>

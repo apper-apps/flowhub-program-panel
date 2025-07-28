@@ -145,8 +145,8 @@ const TaskForm = ({ task, onSave, onCancel }) => {
             value={formData.description}
             onChange={(e) => handleChange('description', e.target.value)}
             placeholder="Enter task description"
-            rows="3"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+rows="3"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-sm transition-all duration-300 resize-none"
           />
         </div>
 
@@ -156,7 +156,7 @@ const TaskForm = ({ task, onSave, onCancel }) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Due Date *
             </label>
-            <Input
+<Input
               type="date"
               value={formData.dueDate}
               onChange={(e) => handleChange('dueDate', e.target.value)}
@@ -241,13 +241,13 @@ const TaskForm = ({ task, onSave, onCancel }) => {
       </div>
 
       {/* Actions */}
-<div className="flex flex-col sm:flex-row justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+<div className="flex flex-col sm:flex-row justify-end gap-3 mt-8 pt-6 border-t border-gray-200/50">
         <Button
           type="button"
           variant="ghost"
           onClick={onCancel}
           disabled={isLoading}
-          className="w-full sm:w-auto min-h-[44px] order-2 sm:order-1"
+          className="w-full sm:w-auto min-h-[44px] order-2 sm:order-1 hover:shadow-md"
         >
           Cancel
         </Button>
@@ -255,7 +255,7 @@ const TaskForm = ({ task, onSave, onCancel }) => {
           type="submit"
           variant="primary"
           disabled={isLoading}
-          className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 order-1 sm:order-2"
+          className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 order-1 sm:order-2 shadow-lg hover:shadow-xl"
         >
           {isLoading && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
           {task ? 'Update Task' : 'Create Task'}

@@ -17,13 +17,13 @@ const ActivityList = ({ activities = [], onEdit, onDelete, isLoading = false }) 
   };
 
   const getActivityColor = (type) => {
-    const colors = {
-      Call: 'bg-green-100 text-green-600',
-      Email: 'bg-blue-100 text-blue-600',
-      Meeting: 'bg-purple-100 text-purple-600',
-      Note: 'bg-gray-100 text-gray-600'
+const colors = {
+      Call: 'bg-gradient-to-r from-green-100 to-green-200 text-green-700 border-green-200/50 shadow-green-500/10',
+      Email: 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 border-blue-200/50 shadow-blue-500/10',
+      Meeting: 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-700 border-purple-200/50 shadow-purple-500/10',
+      Note: 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 border-gray-200/50 shadow-gray-500/10'
     };
-    return colors[type] || 'bg-gray-100 text-gray-600';
+    return colors[type] || 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 border-gray-200/50 shadow-gray-500/10';
   };
 
   const formatDateTime = (dateString) => {
@@ -43,17 +43,17 @@ const ActivityList = ({ activities = [], onEdit, onDelete, isLoading = false }) 
     }
   };
 
-  if (isLoading) {
+if (isLoading) {
     return (
       <div className="space-y-4">
         {[...Array(3)].map((_, index) => (
-          <div key={index} className="border border-gray-200 rounded-xl p-4 animate-pulse">
+          <div key={index} className="border border-gray-200/50 rounded-xl p-4 animate-pulse bg-white/60 backdrop-blur-sm shadow-sm">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-gray-200 rounded-xl"></div>
+              <div className="w-10 h-10 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-xl shimmer"></div>
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded w-1/4 shimmer"></div>
+                <div className="h-3 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded w-3/4 shimmer"></div>
+                <div className="h-3 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded w-1/2 shimmer"></div>
               </div>
             </div>
           </div>
@@ -62,14 +62,14 @@ const ActivityList = ({ activities = [], onEdit, onDelete, isLoading = false }) 
     );
   }
 
-  if (!activities.length) {
+if (!activities.length) {
     return (
       <div className="text-center py-12">
-        <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-gray-500/10">
           <ApperIcon name="FileText" size={24} className="text-gray-400" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No Activities Yet</h3>
-        <p className="text-gray-500 mb-6">Start tracking interactions by adding your first activity.</p>
+        <h3 className="text-lg font-medium text-gray-900 mb-2 font-display">No Activities Yet</h3>
+        <p className="text-gray-500 mb-6 font-body">Start tracking interactions by adding your first activity.</p>
       </div>
     );
   }
@@ -80,7 +80,7 @@ const ActivityList = ({ activities = [], onEdit, onDelete, isLoading = false }) 
         const { date, time } = formatDateTime(activity.date);
         
         return (
-          <div key={activity.Id} className="border border-gray-200 rounded-xl p-4 hover:shadow-sm transition-shadow">
+<div key={activity.Id} className="border border-gray-200/50 rounded-xl p-4 hover:shadow-lg hover:shadow-gray-500/10 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:bg-white hover:border-gray-300/60">
             <div className="flex items-start gap-4">
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getActivityColor(activity.type)}`}>
                 <ApperIcon name={getActivityIcon(activity.type)} size={18} />
@@ -97,11 +97,11 @@ const ActivityList = ({ activities = [], onEdit, onDelete, isLoading = false }) 
                 <p className="text-gray-700 text-sm leading-relaxed">{activity.description}</p>
                 
                 <div className="flex items-center gap-2 mt-3">
-                  <Button
+<Button
                     variant="ghost"
                     size="sm"
                     onClick={() => onEdit(activity)}
-                    className="text-gray-500 hover:text-indigo-600"
+                    className="text-gray-500 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                   >
                     <ApperIcon name="Edit2" size={14} />
                     Edit

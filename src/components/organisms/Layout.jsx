@@ -8,15 +8,15 @@ import Button from "@/components/atoms/Button";
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  return (
-    <div className="min-h-screen bg-gray-50">
+return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-indigo-50/30">
       {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-30">
+<div className="lg:hidden fixed top-4 left-4 z-30">
         <Button
           variant="outline"
           size="sm"
           onClick={() => setSidebarOpen(true)}
-          className="bg-white shadow-lg"
+          className="bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl border-gray-200/80 hover:bg-white transition-all duration-200"
         >
           <ApperIcon name="Menu" size={20} />
         </Button>

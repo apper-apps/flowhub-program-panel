@@ -163,19 +163,19 @@ const filterTasks = () => {
     }
   };
 
-  const getPriorityColor = (priority) => {
+const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'High': return 'text-red-600 bg-red-50';
-      case 'Medium': return 'text-yellow-600 bg-yellow-50';
-      case 'Low': return 'text-green-600 bg-green-50';
-      default: return 'text-gray-600 bg-gray-50';
+      case 'High': return 'text-red-700 bg-gradient-to-r from-red-50 to-red-100 border-red-200/50 shadow-red-500/10';
+      case 'Medium': return 'text-yellow-700 bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200/50 shadow-yellow-500/10';
+      case 'Low': return 'text-green-700 bg-gradient-to-r from-green-50 to-green-100 border-green-200/50 shadow-green-500/10';
+      default: return 'text-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200/50 shadow-gray-500/10';
     }
   };
 
   const getStatusColor = (status) => {
     return status === 'Completed' 
-      ? 'text-green-600 bg-green-50' 
-      : 'text-blue-600 bg-blue-50';
+      ? 'text-green-700 bg-gradient-to-r from-green-50 to-green-100 border-green-200/50 shadow-green-500/10' 
+      : 'text-blue-700 bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200/50 shadow-blue-500/10';
   };
 
   const isOverdue = (dueDate, status) => {
@@ -202,15 +202,15 @@ const filterTasks = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Tasks</h1>
-          <p className="text-gray-500">Manage follow-up tasks and activities</p>
+<p className="text-gray-600 font-body">Manage follow-up tasks and activities</p>
         </div>
         <Button
           variant="primary"
           onClick={handleCreateTask}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 shadow-lg hover:shadow-xl"
         >
           <ApperIcon name="Plus" size={16} />
           New Task
@@ -218,7 +218,7 @@ const filterTasks = () => {
       </div>
 
       {/* Filters */}
-<div className="bg-white p-4 rounded-lg border border-gray-200">
+<div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-gray-200/50 shadow-lg">
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <SearchInput
@@ -271,31 +271,29 @@ const filterTasks = () => {
       </div>
 
       {/* Tasks List */}
-      {filteredTasks.length === 0 ? (
-        <Empty
-          title="No tasks found"
-          description="Create your first task to get started"
-          action={
-            <Button variant="primary" onClick={handleCreateTask}>
-              <ApperIcon name="Plus" size={16} className="mr-2" />
-              Create Task
-            </Button>
-          }
-        />
+{filteredTasks.length === 0 ? (
+        <div className="bg-white/60 backdrop-blur-sm rounded-lg border border-gray-200/50 p-8 shadow-lg">
+          <Empty
+            icon="CheckSquare"
+            title="No tasks found"
+            message="Create your first task to get started with task management"
+            onAction={handleCreateTask}
+          />
+        </div>
       ) : (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="divide-y divide-gray-200">
+<div className="bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200/50 overflow-hidden shadow-lg">
+          <div className="divide-y divide-gray-200/50">
             {filteredTasks.map((task) => (
-              <div key={task.Id} className="p-6 hover:bg-gray-50">
+              <div key={task.Id} className="p-6 hover:bg-white/90 transition-all duration-300 group">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
                       <button
                         onClick={() => handleToggleStatus(task.Id)}
-                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-300 ${
                           task.status === 'Completed'
-                            ? 'bg-green-500 border-green-500 text-white'
-                            : 'border-gray-300 hover:border-green-500'
+                            ? 'bg-gradient-to-r from-green-500 to-green-600 border-green-500 text-white shadow-lg shadow-green-500/25'
+                            : 'border-gray-300 hover:border-green-500 hover:shadow-md hover:shadow-green-500/20'
                         }`}
                       >
                         {task.status === 'Completed' && (
@@ -303,43 +301,44 @@ const filterTasks = () => {
                         )}
                       </button>
                       <h3 
-                        className={`text-lg font-semibold cursor-pointer hover:text-indigo-600 ${
-                          task.status === 'Completed' ? 'line-through text-gray-500' : 'text-gray-900'
+                        className={`text-lg font-semibold cursor-pointer transition-all duration-300 font-display ${
+                          task.status === 'Completed' ? 'line-through text-gray-500' : 'text-gray-900 hover:text-primary group-hover:text-primary'
                         }`}
                         onClick={() => handleViewTask(task)}
                       >
                         {task.title}
                       </h3>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(task.priority)}`}>
+                      <span className={`px-3 py-1 text-xs font-medium rounded-full border shadow-sm ${getPriorityColor(task.priority)}`}>
                         {task.priority}
                       </span>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(task.status)}`}>
+                      <span className={`px-3 py-1 text-xs font-medium rounded-full border shadow-sm ${getStatusColor(task.status)}`}>
                         {task.status}
                       </span>
                     </div>
                     
-                    <p className="text-gray-600 mb-3 line-clamp-2">{task.description}</p>
+                    <p className="text-gray-600 mb-3 line-clamp-2 font-body group-hover:text-gray-700 transition-colors">{task.description}</p>
                     
                     <div className="flex items-center gap-4 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
-                        <ApperIcon name="Calendar" size={14} />
-                        <span className={isOverdue(task.dueDate, task.status) ? 'text-red-600 font-medium' : ''}>
+                        <ApperIcon name="Calendar" size={14} className="text-gray-400" />
+                        <span className={isOverdue(task.dueDate, task.status) ? 'text-red-600 font-medium' : 'group-hover:text-gray-600 transition-colors'}>
                           Due {formatDate(task.dueDate)}
                           {isOverdue(task.dueDate, task.status) && ' (Overdue)'}
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <ApperIcon name="Link" size={14} />
-                        <span>{getLinkedRecordName(task)}</span>
+                        <ApperIcon name="Link" size={14} className="text-gray-400" />
+                        <span className="group-hover:text-gray-600 transition-colors">{getLinkedRecordName(task)}</span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-2 ml-4">
+                  <div className="flex items-center gap-2 ml-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleViewTask(task)}
+                      className="hover:bg-primary/10 hover:text-primary"
                     >
                       <ApperIcon name="Eye" size={16} />
                     </Button>
@@ -347,6 +346,7 @@ const filterTasks = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleEditTask(task)}
+                      className="hover:bg-primary/10 hover:text-primary"
                     >
                       <ApperIcon name="Edit" size={16} />
                     </Button>

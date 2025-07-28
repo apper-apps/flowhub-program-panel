@@ -214,7 +214,7 @@ const DealForm = ({ onSubmit, onCancel, companies, contacts, initialData }) => {
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Notes
         </label>
-        <textarea
+<textarea
           name="notes"
           value={formData.notes}
           onChange={handleChange}
@@ -224,20 +224,20 @@ const DealForm = ({ onSubmit, onCancel, companies, contacts, initialData }) => {
         />
       </div>
 
-<div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200">
+<div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200/50">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="w-full sm:w-auto min-h-[44px] order-2 sm:order-1"
+          className="w-full sm:w-auto min-h-[44px] order-2 sm:order-1 hover:shadow-md"
         >
           Cancel
         </Button>
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full sm:w-auto min-h-[44px] order-1 sm:order-2"
+          className="w-full sm:w-auto min-h-[44px] order-1 sm:order-2 shadow-lg hover:shadow-xl"
         >
           {isSubmitting ? (
             <>

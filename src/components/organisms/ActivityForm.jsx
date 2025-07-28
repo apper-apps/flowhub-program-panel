@@ -108,8 +108,8 @@ const ActivityForm = ({ activity, contactId, onSave, onCancel, isLoading = false
 
   return (
     <div className="p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center">
+<div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/25">
           <ApperIcon name={activity ? getActivityIcon(activity.type) : 'Plus'} size={20} className="text-white" />
         </div>
         <div>
@@ -145,8 +145,8 @@ const ActivityForm = ({ activity, contactId, onSave, onCancel, isLoading = false
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${
-              errors.date ? 'border-red-500' : 'border-gray-300'
+className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-sm transition-all duration-300 ${
+              errors.date ? 'border-red-500 focus:ring-red-500/50' : 'border-gray-300 hover:border-gray-400'
             }`}
             required
           />
@@ -160,11 +160,11 @@ const ActivityForm = ({ activity, contactId, onSave, onCancel, isLoading = false
             Description *
           </label>
           <textarea
-            name="description"
+name="description"
             value={formData.description}
             onChange={handleChange}
             rows={4}
-            className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors resize-none ${
+            className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-sm transition-all duration-300 resize-none ${
               errors.description ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="Describe the activity details..."
@@ -175,12 +175,12 @@ const ActivityForm = ({ activity, contactId, onSave, onCancel, isLoading = false
           )}
         </div>
 
-<div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200">
+<div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200/50">
           <Button
             type="submit"
             variant="primary"
             disabled={isLoading}
-            className="w-full sm:flex-1 min-h-[44px] order-1"
+            className="w-full sm:flex-1 min-h-[44px] order-1 shadow-lg hover:shadow-xl"
           >
             {isLoading ? (
               <>
@@ -200,7 +200,7 @@ const ActivityForm = ({ activity, contactId, onSave, onCancel, isLoading = false
             variant="secondary"
             onClick={onCancel}
             disabled={isLoading}
-            className="w-full sm:w-auto min-h-[44px] order-2"
+            className="w-full sm:w-auto min-h-[44px] order-2 hover:shadow-md"
           >
             Cancel
           </Button>

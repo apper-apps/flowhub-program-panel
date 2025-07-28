@@ -138,7 +138,7 @@ await onSubmit({
           onChange={handleChange}
           placeholder="Additional notes about this contact..."
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-sm transition-all duration-300 resize-none"
         />
       </div>
 
@@ -158,13 +158,13 @@ await onSubmit({
         </Select>
       )}
       
-<div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-6 border-t border-gray-200">
+<div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-6 border-t border-gray-200/50">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="w-full sm:w-auto min-h-[44px] order-2 sm:order-1"
+          className="w-full sm:w-auto min-h-[44px] order-2 sm:order-1 hover:shadow-md"
         >
           Cancel
         </Button>
@@ -173,7 +173,7 @@ await onSubmit({
           type="submit"
           variant="primary"
           disabled={isSubmitting}
-          className="w-full sm:w-auto min-w-[120px] min-h-[44px] order-1 sm:order-2"
+          className="w-full sm:w-auto min-w-[120px] min-h-[44px] order-1 sm:order-2 shadow-lg hover:shadow-xl"
         >
           {isSubmitting ? (
             <>

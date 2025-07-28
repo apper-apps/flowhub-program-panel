@@ -89,7 +89,7 @@ const handleAddContact = async (contactData) => {
 
   return (
 <>
-      <ContactList
+<ContactList
         contacts={contacts}
         companies={companies}
         loading={loading}
