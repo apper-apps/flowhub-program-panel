@@ -236,7 +236,7 @@ if (error) {
       </div>
 
       {/* Stats Cards */}
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    {/*<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Total Contacts"
           value={stats.totalContacts}
@@ -272,7 +272,7 @@ if (error) {
             value: "Last 30 days"
           }}
         />
-      </div>
+      </div>*/}
 
       {/* Contacts by Status */}
 <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100/50 p-6 shadow-lg">
