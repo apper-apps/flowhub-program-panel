@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
 
@@ -41,8 +41,8 @@ const sizeClasses = {
 
   return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 overflow-y-auto">
-        <div className="flex items-center justify-center min-h-screen p-4 text-center sm:block sm:p-0">
+<div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="flex items-center justify-center min-h-screen p-2 sm:p-4 text-center">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -51,34 +51,40 @@ const sizeClasses = {
             className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
           />
 
-          <span className="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
-
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className={`inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full mx-auto ${sizeClasses[size]}`}
+            onClick={(e) => e.stopPropagation()}
+            className={`
+              relative inline-block align-bottom bg-white rounded-xl text-left overflow-hidden 
+              shadow-xl transform transition-all w-full mx-2 sm:mx-auto my-4 sm:my-8 
+              max-h-[95vh] sm:max-h-[90vh] flex flex-col
+              ${sizeClasses[size]}
+            `}
           >
             {title && (
-              <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 pr-4">{title}</h3>
+              <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex-shrink-0">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 pr-2 sm:pr-4 truncate">
+                  {title}
+                </h3>
                 {showCloseButton && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={onClose}
-                    className="p-2 min-h-[44px] min-w-[44px] flex-shrink-0"
+                    className="p-2 touch-target flex-shrink-0 -mr-2 sm:-mr-1"
                   >
-                    <ApperIcon name="X" size={20} />
+                    <ApperIcon name="X" size={18} sm:size={20} />
                   </Button>
                 )}
               </div>
             )}
             
-            <div className="px-4 sm:px-6 py-4 max-h-[calc(100vh-8rem)] overflow-y-auto">
+            <div className="px-3 sm:px-6 py-3 sm:py-4 overflow-y-auto flex-1 min-h-0">
               {children}
             </div>
-          </motion.div>
+</motion.div>
         </div>
       </div>
     </AnimatePresence>,

@@ -9,7 +9,7 @@ const Button = forwardRef(({
   className = "",
   ...props 
 }, ref) => {
-const baseStyles = "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-95 font-body shadow-sm";
+const baseStyles = "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-95 font-body shadow-sm touch-target";
   
   const variants = {
     primary: "bg-gradient-primary text-white hover:shadow-xl hover:shadow-primary/30 focus:ring-primary/50 disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98] border border-transparent hover:border-primary/20",
@@ -20,10 +20,10 @@ const baseStyles = "inline-flex items-center justify-center font-medium rounded-
   };
   
   const sizes = {
-    sm: "px-3 py-1.5 text-sm min-h-[36px]",
-    md: "px-4 py-2 text-sm min-h-[40px]",
-    lg: "px-6 py-3 text-base min-h-[44px]",
-    xl: "px-8 py-4 text-lg min-h-[48px]"
+    sm: "px-2 py-1.5 text-sm min-h-[40px] sm:px-3 sm:min-h-[36px]",
+    md: "px-3 py-2 text-sm min-h-[44px] sm:px-4 sm:min-h-[40px]",
+    lg: "px-4 py-3 text-base min-h-[48px] sm:px-6 sm:min-h-[44px]",
+    xl: "px-6 py-4 text-lg min-h-[52px] sm:px-8 sm:min-h-[48px]"
   };
   
   return (
