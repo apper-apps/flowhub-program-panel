@@ -1,0 +1,74 @@
+[
+  {
+    "Id": 1,
+    "name": "Enterprise CRM Integration",
+    "value": 125000,
+    "stage": "Negotiation",
+    "expectedCloseDate": "2024-03-15",
+    "contactId": 1,
+    "companyId": 1,
+    "notes": "Large enterprise deal for complete CRM integration. Multiple stakeholders involved.",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-02-10T14:20:00Z"
+  },
+  {
+    "Id": 2,
+    "name": "Healthcare Analytics Platform",
+    "value": 85000,
+    "stage": "Proposal",
+    "expectedCloseDate": "2024-02-28",
+    "contactId": 2,
+    "companyId": 2,
+    "notes": "Custom analytics solution for patient data management. Compliance requirements critical.",
+    "createdAt": "2024-01-20T09:15:00Z",
+    "updatedAt": "2024-02-05T11:30:00Z"
+  },
+  {
+    "Id": 3,
+    "name": "Financial Dashboard Upgrade",
+    "value": 45000,
+    "stage": "Closed Won",
+    "expectedCloseDate": "2024-01-31",
+    "contactId": 3,
+    "companyId": 3,
+    "notes": "Successfully closed deal for dashboard modernization. Implementation starts next month.",
+    "createdAt": "2024-01-05T14:45:00Z",
+    "updatedAt": "2024-01-31T16:20:00Z"
+  },
+  {
+    "Id": 4,
+    "name": "Education Portal Development",
+    "value": 95000,
+    "stage": "Prospecting",
+    "expectedCloseDate": "2024-04-30",
+    "contactId": 5,
+    "companyId": 4,
+    "notes": "Early stage opportunity for K-12 education platform. Budget approval pending.",
+    "createdAt": "2024-02-01T10:00:00Z",
+    "updatedAt": "2024-02-08T13:15:00Z"
+  },
+  {
+    "Id": 5,
+    "name": "Manufacturing Process Automation",
+    "value": 200000,
+    "stage": "Proposal",
+    "expectedCloseDate": "2024-03-31",
+    "contactId": 6,
+    "companyId": 5,
+    "notes": "Major automation project for production line optimization. High-value strategic deal.",
+    "createdAt": "2024-01-25T11:20:00Z",
+    "updatedAt": "2024-02-12T09:45:00Z"
+  },
+  {
+    "Id": 6,
+    "name": "Small Business CRM Setup",
+    "value": 15000,
+    "stage": "Closed Lost",
+    "expectedCloseDate": "2024-01-15",
+    "contactId": 4,
+    "companyId": null,
+    "notes": "Lost to competitor due to pricing. Client went with lower-cost alternative.",
+    "createdAt": "2023-12-15T08:30:00Z",
+    "updatedAt": "2024-01-15T10:00:00Z"
+  }
+]

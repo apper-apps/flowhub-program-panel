@@ -5,15 +5,17 @@ import Layout from "@/components/organisms/Layout";
 import Dashboard from "@/pages/Dashboard";
 import Contacts from "@/pages/Contacts";
 import Companies from "@/pages/Companies";
+import Deals from "@/pages/Deals";
 
 function App() {
   return (
     <>
-      <Routes>
+<Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="contacts" element={<Contacts />} />
           <Route path="companies" element={<Companies />} />
+          <Route path="deals" element={<Deals />} />
         </Route>
       </Routes>
       
