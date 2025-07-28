@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { contactService } from "@/services/api/contactService";
-import { companyService } from "@/services/api/companyService";
-import Modal from "@/components/molecules/Modal";
-import ContactDetail from "@/components/organisms/ContactDetail";
-import ContactList from "@/components/organisms/ContactList";
+import React, { useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
+import { contactService } from '@/services/api/contactService'
+import { companyService } from '@/services/api/companyService'
+import Modal from '@/components/molecules/Modal'
+import ContactDetail from '@/components/organisms/ContactDetail'
+import ContactList from '@/components/organisms/ContactList'
 import ContactForm from "@/components/organisms/ContactForm";
 import Error from "@/components/ui/Error";
 const Contacts = () => {
