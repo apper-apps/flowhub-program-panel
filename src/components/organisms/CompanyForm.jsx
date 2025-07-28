@@ -57,7 +57,7 @@ const newErrors = {};
       newErrors.website = "Website must be a valid URL (starting with http:// or https://)";
     }
 
-    if (formData.phone && !formData.phone.match(/^[\+]?[1-9][\d]{0,15}$/)) {
+if (formData.phone && !formData.phone.match(/^[+]?[1-9][\d]{0,15}$/)) {
       newErrors.phone = "Please enter a valid phone number";
     }
     
