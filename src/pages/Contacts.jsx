@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
-import ContactList from "@/components/organisms/ContactList";
-import ContactForm from "@/components/organisms/ContactForm";
-import ContactDetail from "@/components/organisms/ContactDetail";
-import Modal from "@/components/molecules/Modal";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { contactService } from "@/services/api/contactService";
 import { companyService } from "@/services/api/companyService";
+import Modal from "@/components/molecules/Modal";
+import ContactDetail from "@/components/organisms/ContactDetail";
+import ContactList from "@/components/organisms/ContactList";
+import ContactForm from "@/components/organisms/ContactForm";
+import Error from "@/components/ui/Error";
 const Contacts = () => {
   const [contacts, setContacts] = useState([]);
   const [companies, setCompanies] = useState([]);
@@ -33,13 +35,16 @@ const Contacts = () => {
     }
   };
 
-  const handleAddContact = async (contactData) => {
+const handleAddContact = async (contactData) => {
     try {
       const newContact = await contactService.create(contactData);
       setContacts(prev => [...prev, newContact]);
       setIsAddModalOpen(false);
+      toast.success("Contact added successfully!");
     } catch (err) {
-      throw new Error(err.message || "Failed to add contact");
+      console.error("Failed to add contact:", err);
+      toast.error(err.message || "Failed to add contact");
+      // Don't close modal on error - let user try again
     }
   };
 

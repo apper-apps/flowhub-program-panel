@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
+import { contactService } from "@/services/api/contactService";
+import { companyService } from "@/services/api/companyService";
+import Modal from "@/components/molecules/Modal";
 import CompanyList from "@/components/organisms/CompanyList";
 import CompanyForm from "@/components/organisms/CompanyForm";
-import Modal from "@/components/molecules/Modal";
-import { companyService } from "@/services/api/companyService";
-import { contactService } from "@/services/api/contactService";
 const Companies = () => {
 const [companies, setCompanies] = useState([]);
   const [contacts, setContacts] = useState([]);
@@ -32,28 +33,38 @@ const [companiesData, contactsData] = await Promise.all([
     }
   };
 
-  const handleAddCompany = async (companyData) => {
+const handleAddCompany = async (companyData) => {
     try {
       const newCompany = await companyService.create(companyData);
       setCompanies(prev => [...prev, newCompany]);
       setIsAddModalOpen(false);
+      toast.success("Company added successfully!");
     } catch (err) {
-      throw new Error(err.message || "Failed to add company");
+      console.error("Failed to add company:", err);
+      toast.error(err.message || "Failed to add company");
+      // Don't close modal on error - let user try again
     }
-};
+  };
 
   const handleEditCompany = (company) => {
     setSelectedCompany(company);
     setIsEditModalOpen(true);
   };
 
-  const handleUpdateCompany = async (companyData) => {
-    const updatedCompany = await companyService.update(selectedCompany.Id, companyData);
-    setCompanies(prev => prev.map(company => 
-      company.Id === selectedCompany.Id ? updatedCompany : company
-    ));
-    setIsEditModalOpen(false);
-    setSelectedCompany(null);
+const handleUpdateCompany = async (companyData) => {
+    try {
+      const updatedCompany = await companyService.update(selectedCompany.Id, companyData);
+      setCompanies(prev => prev.map(company => 
+        company.Id === selectedCompany.Id ? updatedCompany : company
+      ));
+      setIsEditModalOpen(false);
+      setSelectedCompany(null);
+      toast.success("Company updated successfully!");
+    } catch (err) {
+      console.error("Failed to update company:", err);
+      toast.error(err.message || "Failed to update company");
+      // Don't close modal on error - let user try again
+    }
   };
 
   useEffect(() => {
