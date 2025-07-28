@@ -6,15 +6,20 @@ import ApperIcon from "@/components/ApperIcon";
 import { toast } from "react-toastify";
 
 const ContactDetail = ({ contact, companies = [], onUpdate, onDelete, onClose }) => {
-  const [isEditing, setIsEditing] = useState(false);
+const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
   const [activities, setActivities] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [isActivitiesLoading, setIsActivitiesLoading] = useState(false);
+  const [isTasksLoading, setIsTasksLoading] = useState(false);
   const [isActivityFormOpen, setIsActivityFormOpen] = useState(false);
+  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState(null);
+  const [editingTask, setEditingTask] = useState(null);
   const [isActivitySaving, setIsActivitySaving] = useState(false);
+  const [isTaskSaving, setIsTaskSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: contact.name || "",
     email: contact.email || "",
@@ -83,7 +88,7 @@ const handleCancel = () => {
   };
 
   // Activity management functions
-  const loadActivities = async () => {
+const loadActivities = async () => {
     setIsActivitiesLoading(true);
     try {
       const { activityService } = await import('@/services/api/activityService');
@@ -93,6 +98,19 @@ const handleCancel = () => {
       toast.error('Failed to load activities');
     } finally {
       setIsActivitiesLoading(false);
+    }
+  };
+
+  const loadTasks = async () => {
+    setIsTasksLoading(true);
+    try {
+      const { taskService } = await import('@/services/api/taskService');
+      const contactTasks = await taskService.getByContactId(contact.Id);
+      setTasks(contactTasks);
+    } catch (error) {
+      toast.error('Failed to load tasks');
+    } finally {
+      setIsTasksLoading(false);
     }
   };
 
@@ -137,10 +155,75 @@ const handleCancel = () => {
     }
   };
 
+  const handleAddTask = () => {
+    setEditingTask(null);
+    setIsTaskFormOpen(true);
+  };
+
+  const handleEditTask = (task) => {
+    setEditingTask(task);
+    setIsTaskFormOpen(true);
+  };
+
+  const handleSaveTask = async (taskData) => {
+    setIsTaskSaving(true);
+    try {
+      const { taskService } = await import('@/services/api/taskService');
+      
+      const taskPayload = {
+        ...taskData,
+        linkedTo: 'contact',
+        linkedId: contact.Id
+      };
+      
+      if (editingTask) {
+        await taskService.update(editingTask.Id, taskPayload);
+        toast.success('Task updated successfully');
+      } else {
+        await taskService.create(taskPayload);
+        toast.success('Task created successfully');
+      }
+      
+      await loadTasks();
+      setIsTaskFormOpen(false);
+      setEditingTask(null);
+    } catch (error) {
+      toast.error(error.message);
+      throw error;
+    } finally {
+      setIsTaskSaving(false);
+    }
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      const { taskService } = await import('@/services/api/taskService');
+      await taskService.delete(taskId);
+      await loadTasks();
+      toast.success('Task deleted successfully');
+    } catch (error) {
+      toast.error(error.message);
+      throw error;
+    }
+  };
+
+  const handleToggleTaskStatus = async (taskId) => {
+    try {
+      const { taskService } = await import('@/services/api/taskService');
+      await taskService.toggleStatus(taskId);
+      await loadTasks();
+      toast.success('Task status updated');
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   // Load activities when tab changes to activities
-  React.useEffect(() => {
+React.useEffect(() => {
     if (activeTab === 'activities') {
       loadActivities();
+    } else if (activeTab === 'tasks') {
+      loadTasks();
     }
   }, [activeTab, contact.Id]);
 
@@ -347,7 +430,7 @@ const handleCancel = () => {
           </div>
         )}
 
-        {/* Activity Log Tab */}
+{/* Activity Log Tab */}
         {activeTab === 'activities' && (
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
@@ -383,8 +466,115 @@ const handleCancel = () => {
           </div>
         )}
 
+        {/* Tasks Tab */}
+        {activeTab === 'tasks' && (
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Tasks</h3>
+                <p className="text-sm text-gray-500">Manage follow-up tasks for this contact</p>
+              </div>
+              <Button
+                variant="primary"
+                onClick={handleAddTask}
+                className="flex items-center gap-2"
+              >
+                <ApperIcon name="Plus" size={16} />
+                Add Task
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              {isTasksLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <ApperIcon name="Loader2" size={20} className="animate-spin mr-2" />
+                  Loading tasks...
+                </div>
+              ) : tasks.length === 0 ? (
+                <div className="text-center py-8">
+                  <ApperIcon name="CheckSquare" size={48} className="mx-auto text-gray-300 mb-4" />
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">No tasks yet</h4>
+                  <p className="text-gray-500 mb-4">Create your first task to get started</p>
+                  <Button variant="primary" onClick={handleAddTask}>
+                    <ApperIcon name="Plus" size={16} className="mr-2" />
+                    Add Task
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {tasks.map((task) => (
+                    <div key={task.Id} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 mb-2">
+                            <button
+                              onClick={() => handleToggleTaskStatus(task.Id)}
+                              className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                                task.status === 'Completed'
+                                  ? 'bg-green-500 border-green-500 text-white'
+                                  : 'border-gray-300 hover:border-green-500'
+                              }`}
+                            >
+                              {task.status === 'Completed' && (
+                                <ApperIcon name="Check" size={12} />
+                              )}
+                            </button>
+                            <h4 className={`font-semibold ${
+                              task.status === 'Completed' ? 'line-through text-gray-500' : 'text-gray-900'
+                            }`}>
+                              {task.title}
+                            </h4>
+                            <span className={`px-2 py-1 text-xs font-medium rounded ${
+                              task.priority === 'High' ? 'bg-red-100 text-red-800' :
+                              task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-green-100 text-green-800'
+                            }`}>
+                              {task.priority}
+                            </span>
+                          </div>
+                          {task.description && (
+                            <p className="text-sm text-gray-600 mb-2">{task.description}</p>
+                          )}
+                          <div className="flex items-center gap-4 text-sm text-gray-500">
+                            <div className="flex items-center gap-1">
+                              <ApperIcon name="Calendar" size={14} />
+                              <span>Due {new Date(task.dueDate).toLocaleDateString()}</span>
+                            </div>
+                            <span className={`px-2 py-1 text-xs rounded ${
+                              task.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                            }`}>
+                              {task.status}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditTask(task)}
+                          >
+                            <ApperIcon name="Edit" size={14} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteTask(task.Id)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <ApperIcon name="Trash2" size={14} />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Tab Navigation */}
-        <div className="border-t border-gray-200 px-6 py-4">
+<div className="border-t border-gray-200 px-6 py-4">
           <div className="flex space-x-1">
             <button
               onClick={() => setActiveTab('details')}
@@ -413,11 +603,27 @@ const handleCancel = () => {
                 </span>
               )}
             </button>
+            <button
+              onClick={() => setActiveTab('tasks')}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                activeTab === 'tasks'
+                  ? 'bg-indigo-100 text-indigo-700'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <ApperIcon name="CheckSquare" size={16} className="inline mr-2" />
+              Tasks
+              {tasks.length > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-gray-200 text-gray-600 rounded-full">
+                  {tasks.length}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Activity Form Modal */}
+{/* Activity Form Modal */}
       {isActivityFormOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -434,6 +640,30 @@ const handleCancel = () => {
                       setEditingActivity(null);
                     }}
                     isLoading={isActivitySaving}
+                  />
+                </React.Suspense>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Task Form Modal */}
+      {isTaskFormOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            {React.createElement(() => {
+              const TaskForm = React.lazy(() => import('@/components/organisms/TaskForm'));
+              return (
+                <React.Suspense fallback={<div className="p-6">Loading form...</div>}>
+                  <TaskForm
+                    task={editingTask}
+                    onSave={handleSaveTask}
+                    onCancel={() => {
+                      setIsTaskFormOpen(false);
+                      setEditingTask(null);
+                    }}
+                    isLoading={isTaskSaving}
                   />
                 </React.Suspense>
               );

@@ -8,6 +8,7 @@ const navigation = [
     { name: "Contacts", href: "/contacts", icon: "Users" },
     { name: "Companies", href: "/companies", icon: "Building2" },
     { name: "Deals", href: "/deals", icon: "Handshake" },
+    { name: "Tasks", href: "/tasks", icon: "CheckSquare" },
   ];
 
   const NavItem = ({ item }) => (

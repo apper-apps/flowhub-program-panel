@@ -6,6 +6,7 @@ import Dashboard from "@/pages/Dashboard";
 import Contacts from "@/pages/Contacts";
 import Companies from "@/pages/Companies";
 import Deals from "@/pages/Deals";
+import Tasks from "@/pages/Tasks";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="contacts" element={<Contacts />} />
           <Route path="companies" element={<Companies />} />
           <Route path="deals" element={<Deals />} />
+          <Route path="tasks" element={<Tasks />} />
         </Route>
       </Routes>
       

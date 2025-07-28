@@ -1,0 +1,74 @@
+[
+  {
+    "Id": 1,
+    "title": "Follow up on proposal discussion",
+    "description": "Send detailed proposal and pricing information to the client",
+    "dueDate": "2024-01-15",
+    "priority": "High",
+    "status": "Pending",
+    "linkedTo": "contact",
+    "linkedId": 1,
+    "createdAt": "2024-01-10T09:00:00Z",
+    "updatedAt": "2024-01-10T09:00:00Z"
+  },
+  {
+    "Id": 2,
+    "title": "Schedule product demo",
+    "description": "Book a demo session to showcase our latest features",
+    "dueDate": "2024-01-18",
+    "priority": "Medium",
+    "status": "Pending",
+    "linkedTo": "company",
+    "linkedId": 2,
+    "createdAt": "2024-01-12T14:30:00Z",
+    "updatedAt": "2024-01-12T14:30:00Z"
+  },
+  {
+    "Id": 3,
+    "title": "Prepare contract documents",
+    "description": "Draft and review contract terms for the new partnership",
+    "dueDate": "2024-01-20",
+    "priority": "High",
+    "status": "Completed",
+    "linkedTo": "deal",
+    "linkedId": 1,
+    "createdAt": "2024-01-08T11:15:00Z",
+    "updatedAt": "2024-01-14T16:45:00Z"
+  },
+  {
+    "Id": 4,
+    "title": "Send thank you note",
+    "description": "Follow up with a personalized thank you message after the meeting",
+    "dueDate": "2024-01-12",
+    "priority": "Low",
+    "status": "Completed",
+    "linkedTo": "contact",
+    "linkedId": 3,
+    "createdAt": "2024-01-11T10:20:00Z",
+    "updatedAt": "2024-01-12T09:30:00Z"
+  },
+  {
+    "Id": 5,
+    "title": "Review budget proposal",
+    "description": "Analyze the budget requirements and provide feedback",
+    "dueDate": "2024-01-25",
+    "priority": "Medium",
+    "status": "Pending",
+    "linkedTo": "deal",
+    "linkedId": 2,
+    "createdAt": "2024-01-13T13:45:00Z",
+    "updatedAt": "2024-01-13T13:45:00Z"
+  },
+  {
+    "Id": 6,
+    "title": "Update company profile",
+    "description": "Refresh company information and contact details in the system",
+    "dueDate": "2024-01-16",
+    "priority": "Low",
+    "status": "Pending",
+    "linkedTo": "company",
+    "linkedId": 1,
+    "createdAt": "2024-01-14T08:00:00Z",
+    "updatedAt": "2024-01-14T08:00:00Z"
+  }
+]
