@@ -1,12 +1,18 @@
-import React, { useState, useEffect, useMemo } from "react";
-import StatsCard from "@/components/molecules/StatsCard";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import ApperIcon from "@/components/ApperIcon";
-import DateRangeFilter from "@/components/atoms/DateRangeFilter";
+import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import { contactService } from "@/services/api/contactService";
 import { companyService } from "@/services/api/companyService";
+import { create, getAll } from "@/services/api/dealService";
 import { activityService } from "@/services/api/activityService";
+import ApperIcon from "@/components/ApperIcon";
+import StatsCard from "@/components/molecules/StatsCard";
+import ContactForm from "@/components/organisms/ContactForm";
+import CompanyForm from "@/components/organisms/CompanyForm";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import DateRangeFilter from "@/components/atoms/DateRangeFilter";
+import Companies from "@/pages/Companies";
+import Contacts from "@/pages/Contacts";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -20,9 +26,15 @@ const Dashboard = () => {
       Closed: 0
     }
   });
-  const [allActivities, setAllActivities] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dateRange, setDateRange] = useState({ start: null, end: null });
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [showCompanyModal, setShowCompanyModal] = useState(false);
+  const [allActivities, setAllActivities] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
@@ -42,12 +54,42 @@ const Dashboard = () => {
       });
     }
     
-    return filtered
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, 10);
+    return filtered;
   }, [allActivities, startDate, endDate]);
 
-  const loadDashboardData = async () => {
+  useEffect(() => {
+
+  const handleAddContact = async (contactData) => {
+    try {
+      const newContact = await contactService.create(contactData)
+      setContacts(prev => [...prev, newContact])
+      setShowContactModal(false)
+      toast.success('Contact added successfully!')
+      
+      // Reload dashboard data to update stats
+      await loadDashboardData()
+    } catch (error) {
+      toast.error('Failed to add contact. Please try again.')
+      throw error
+    }
+  }
+
+  const handleAddCompany = async (companyData) => {
+    try {
+      const newCompany = await companyService.create(companyData)
+      setCompanies(prev => [...prev, newCompany])
+      setShowCompanyModal(false)
+      toast.success('Company added successfully!')
+      
+      // Reload dashboard data to update stats
+      await loadDashboardData()
+    } catch (error) {
+      toast.error('Failed to add company. Please try again.')
+      throw error
+    }
+  }
+
+const loadDashboardData = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -239,13 +281,13 @@ if (error) {
         </div>
       </div>
 
-      {/* Quick Actions */}
-<div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100/50 p-6 shadow-lg">
+{/* Quick Actions */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100/50 p-6 shadow-lg">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 font-display">Quick Actions</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <a 
             href="/contacts"
-            className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 hover:scale-[1.02] group border border-blue-100/50"
+            className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 hover:scale-[1.02] group border border-blue-100/50 touch-target"
           >
             <div className="p-2 bg-gradient-primary rounded-lg group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-primary/25">
               <ApperIcon name="Users" size={16} className="text-white" />
@@ -258,7 +300,7 @@ if (error) {
           
           <a 
             href="/companies"
-            className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 hover:scale-[1.02] group border border-purple-100/50"
+            className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 hover:scale-[1.02] group border border-purple-100/50 touch-target"
           >
             <div className="p-2 bg-gradient-accent rounded-lg group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-accent/25">
               <ApperIcon name="Building2" size={16} className="text-white" />
@@ -269,7 +311,10 @@ if (error) {
             </div>
           </a>
           
-          <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg hover:shadow-xl hover:shadow-green-500/10 transition-all duration-300 hover:scale-[1.02] group cursor-pointer border border-green-100/50">
+          <button 
+            onClick={() => setShowContactModal(true)}
+            className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg hover:shadow-xl hover:shadow-green-500/10 transition-all duration-300 hover:scale-[1.02] group border border-green-100/50 touch-target w-full text-left"
+          >
             <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-green-500/25">
               <ApperIcon name="UserPlus" size={16} className="text-white" />
             </div>
@@ -277,9 +322,12 @@ if (error) {
               <p className="font-medium text-gray-900 font-body group-hover:text-green-600 transition-colors">Add Contact</p>
               <p className="text-sm text-gray-600 font-body">Create new contact</p>
             </div>
-          </div>
+          </button>
           
-          <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 hover:scale-[1.02] group cursor-pointer border border-orange-100/50">
+          <button 
+            onClick={() => setShowCompanyModal(true)}
+            className="flex items-center space-x-3 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 hover:scale-[1.02] group border border-orange-100/50 touch-target w-full text-left"
+          >
             <div className="p-2 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-orange-500/25">
               <ApperIcon name="Plus" size={16} className="text-white" />
             </div>
@@ -287,9 +335,72 @@ if (error) {
               <p className="font-medium text-gray-900 font-body group-hover:text-orange-600 transition-colors">Add Company</p>
               <p className="text-sm text-gray-600 font-body">Create new company</p>
             </div>
-          </div>
+          </button>
         </div>
       </div>
+
+      {/* Add Contact Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200/50">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg shadow-lg shadow-green-500/25">
+                  <ApperIcon name="UserPlus" size={20} className="text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 font-display">Add New Contact</h2>
+                  <p className="text-sm text-gray-600 font-body">Create a new contact in your CRM</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowContactModal(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors touch-target"
+              >
+                <ApperIcon name="X" size={20} />
+              </button>
+            </div>
+            <div className="p-6">
+              <ContactForm
+                onSubmit={handleAddContact}
+                onCancel={() => setShowContactModal(false)}
+                companies={companies}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Company Modal */}
+      {showCompanyModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200/50">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg shadow-lg shadow-orange-500/25">
+                  <ApperIcon name="Plus" size={20} className="text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 font-display">Add New Company</h2>
+                  <p className="text-sm text-gray-600 font-body">Create a new company in your CRM</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowCompanyModal(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors touch-target"
+              >
+                <ApperIcon name="X" size={20} />
+              </button>
+            </div>
+            <div className="p-6">
+              <CompanyForm
+                onSubmit={handleAddCompany}
+                onCancel={() => setShowCompanyModal(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Recent Activities */}
       <div className="bg-white rounded-xl border border-gray-100 p-6">
