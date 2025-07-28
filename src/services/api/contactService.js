@@ -77,5 +77,3 @@ contacts[index] = {
     return true;
   }
 };
-
-export { contactService };
