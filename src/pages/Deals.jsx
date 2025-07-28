@@ -201,10 +201,32 @@ try {
   };
 
 const getContactName = (contactId) => {
+    // With referenceField configured, contactId should now be the contact name directly
+    if (contactId && typeof contactId === 'string') {
+      return contactId;
+    }
+    
+    // Handle legacy lookup objects during transition
+    if (contactId && typeof contactId === 'object' && contactId.Name) {
+      return contactId.Name;
+    }
+    
+    // Fallback to finding in contacts array for numeric IDs
     const contact = contacts.find(c => c.Id === contactId);
-    return contact ? contact.name : 'Unknown Contact';
+    return contact ? contact.Name || contact.name : 'Unknown Contact';
   };
 const getCompanyName = (companyId) => {
+    // With referenceField configured, companyId should now be the company name directly
+    if (companyId && typeof companyId === 'string') {
+      return companyId;
+    }
+    
+    // Handle legacy lookup objects during transition
+    if (companyId && typeof companyId === 'object' && companyId.Name) {
+      return companyId.Name;
+    }
+    
+    // Fallback to finding in companies array for numeric IDs
     const company = companies.find(c => c.Id === companyId);
     if (!company) return 'No Company';
     // Handle both lookup object structure {Id, Name} and direct name access

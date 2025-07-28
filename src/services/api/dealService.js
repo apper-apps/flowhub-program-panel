@@ -15,8 +15,14 @@ export const dealService = {
           { field: { Name: "value" } },
           { field: { Name: "stage" } },
           { field: { Name: "expectedCloseDate" } },
-          { field: { Name: "contactId" } },
-          { field: { Name: "companyId" } },
+{ 
+            field: { Name: "contactId" },
+            referenceField: { field: { Name: "Name" } }
+          },
+          { 
+            field: { Name: "companyId" },
+            referenceField: { field: { Name: "Name" } }
+          },
           { field: { Name: "notes" } },
           { field: { Name: "createdAt" } },
           { field: { Name: "updatedAt" } }
@@ -56,8 +62,14 @@ export const dealService = {
           { field: { Name: "value" } },
           { field: { Name: "stage" } },
           { field: { Name: "expectedCloseDate" } },
-          { field: { Name: "contactId" } },
-          { field: { Name: "companyId" } },
+{ 
+            field: { Name: "contactId" },
+            referenceField: { field: { Name: "Name" } }
+          },
+          { 
+            field: { Name: "companyId" },
+            referenceField: { field: { Name: "Name" } }
+          },
           { field: { Name: "notes" } },
           { field: { Name: "createdAt" } },
           { field: { Name: "updatedAt" } }
@@ -268,8 +280,14 @@ export const dealService = {
           { field: { Name: "value" } },
           { field: { Name: "stage" } },
           { field: { Name: "expectedCloseDate" } },
-          { field: { Name: "contactId" } },
-          { field: { Name: "companyId" } },
+{ 
+            field: { Name: "contactId" },
+            referenceField: { field: { Name: "Name" } }
+          },
+          { 
+            field: { Name: "companyId" },
+            referenceField: { field: { Name: "Name" } }
+          },
           { field: { Name: "notes" } },
           { field: { Name: "createdAt" } },
           { field: { Name: "updatedAt" } }
@@ -315,8 +333,14 @@ export const dealService = {
           { field: { Name: "value" } },
           { field: { Name: "stage" } },
           { field: { Name: "expectedCloseDate" } },
-          { field: { Name: "contactId" } },
-          { field: { Name: "companyId" } },
+{ 
+            field: { Name: "contactId" },
+            referenceField: { field: { Name: "Name" } }
+          },
+          { 
+            field: { Name: "companyId" },
+            referenceField: { field: { Name: "Name" } }
+          },
           { field: { Name: "notes" } },
           { field: { Name: "createdAt" } },
           { field: { Name: "updatedAt" } }
@@ -361,8 +385,11 @@ export const dealService = {
           { field: { Name: "Name" } },
           { field: { Name: "value" } },
           { field: { Name: "stage" } },
-          { field: { Name: "expectedCloseDate" } },
-          { field: { Name: "contactId" } },
+{ field: { Name: "expectedCloseDate" } },
+          { 
+            field: { Name: "contactId" },
+            referenceField: { field: { Name: "Name" } }
+          },
           { field: { Name: "companyId" } },
           { field: { Name: "notes" } },
           { field: { Name: "createdAt" } },

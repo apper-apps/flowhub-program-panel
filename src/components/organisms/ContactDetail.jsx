@@ -33,6 +33,17 @@ const [isDeleting, setIsDeleting] = useState(false);
   });
 
 const getCompanyName = (companyId) => {
+// With referenceField configured, companyId should now be the company name directly
+    if (companyId && typeof companyId === 'string') {
+      return companyId;
+    }
+    
+    // Handle legacy lookup objects during transition
+    if (companyId && typeof companyId === 'object' && companyId.Name) {
+      return companyId.Name;
+    }
+    
+    // Fallback to finding in companies array for numeric IDs
     const company = companies.find(c => c.Id === companyId);
     return company ? company.Name : "No company assigned";
   };

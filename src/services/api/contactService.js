@@ -17,7 +17,10 @@ export const contactService = {
           { field: { Name: "jobTitle" } },
           { field: { Name: "notes" } },
           { field: { Name: "status" } },
-          { field: { Name: "companyId" } },
+{ 
+            field: { Name: "companyId" },
+            referenceField: { field: { Name: "Name" } }
+          },
           { field: { Name: "createdAt" } },
           { field: { Name: "updatedAt" } }
         ]
@@ -58,7 +61,10 @@ export const contactService = {
           { field: { Name: "jobTitle" } },
           { field: { Name: "notes" } },
           { field: { Name: "status" } },
-          { field: { Name: "companyId" } },
+{ 
+            field: { Name: "companyId" },
+            referenceField: { field: { Name: "Name" } }
+          },
           { field: { Name: "createdAt" } },
           { field: { Name: "updatedAt" } }
         ]
