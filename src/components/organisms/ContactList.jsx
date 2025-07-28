@@ -6,6 +6,7 @@ import Empty from "@/components/ui/Empty";
 import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
 import SearchInput from "@/components/atoms/SearchInput";
+import DateRangeFilter from "@/components/atoms/DateRangeFilter";
 import Contacts from "@/pages/Contacts";
 import { cn } from "@/utils/cn";
 const ContactList = ({ 
@@ -19,6 +20,8 @@ const ContactList = ({
 }) => {
 const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
 const filteredContacts = useMemo(() => {
     let filtered = contacts;
@@ -40,8 +43,21 @@ const filteredContacts = useMemo(() => {
       filtered = filtered.filter(contact => contact.status === statusFilter);
     }
     
+    // Filter by date range
+    if (startDate || endDate) {
+      filtered = filtered.filter(contact => {
+        const contactDate = new Date(contact.createdAt);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate + 'T23:59:59') : null;
+        
+        if (start && contactDate < start) return false;
+        if (end && contactDate > end) return false;
+        return true;
+      });
+    }
+    
     return filtered;
-  }, [contacts, searchQuery, statusFilter, companies]);
+  }, [contacts, searchQuery, statusFilter, startDate, endDate, companies]);
 
   const statusOptions = [
     { value: "", label: "All Statuses" },
@@ -113,22 +129,35 @@ const filteredContacts = useMemo(() => {
       </div>
 
 {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-2xl">
-        <div className="flex-1">
-          <SearchInput
-            placeholder="Search contacts..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+      <div className="space-y-4 w-full max-w-4xl">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <SearchInput
+              placeholder="Search contacts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="w-full sm:w-48">
+            <Select
+              placeholder="Filter by status..."
+              options={statusOptions}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            />
+          </div>
         </div>
-        <div className="w-full sm:w-48">
-          <Select
-            placeholder="Filter by status..."
-            options={statusOptions}
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          />
-        </div>
+        <DateRangeFilter
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
+          onClear={() => {
+            setStartDate("");
+            setEndDate("");
+          }}
+          label="Filter by creation date"
+        />
       </div>
       {/* Add Contact Button */}
       <div className="flex-shrink-0">

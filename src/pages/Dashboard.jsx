@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import StatsCard from "@/components/molecules/StatsCard";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import ApperIcon from "@/components/ApperIcon";
+import DateRangeFilter from "@/components/atoms/DateRangeFilter";
 import { contactService } from "@/services/api/contactService";
 import { companyService } from "@/services/api/companyService";
 import { activityService } from "@/services/api/activityService";
+
 const Dashboard = () => {
-const [stats, setStats] = useState({
+  const [stats, setStats] = useState({
     totalContacts: 0,
     totalCompanies: 0,
     recentContactsCount: 0,
@@ -18,11 +20,34 @@ const [stats, setStats] = useState({
       Closed: 0
     }
   });
-  const [recentActivities, setRecentActivities] = useState([]);
+  const [allActivities, setAllActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-const loadDashboardData = async () => {
+  const filteredActivities = useMemo(() => {
+    let filtered = allActivities;
+    
+    // Filter by date range
+    if (startDate || endDate) {
+      filtered = filtered.filter(activity => {
+        const activityDate = new Date(activity.date);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate + 'T23:59:59') : null;
+        
+        if (start && activityDate < start) return false;
+        if (end && activityDate > end) return false;
+        return true;
+      });
+    }
+    
+    return filtered
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 10);
+  }, [allActivities, startDate, endDate]);
+
+  const loadDashboardData = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -47,11 +72,6 @@ const loadDashboardData = async () => {
         acc[status] = (acc[status] || 0) + 1;
         return acc;
       }, {});
-
-      // Get recent activities (last 10)
-      const sortedActivities = activities
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .slice(0, 10);
       
       setStats({
         totalContacts: contacts.length,
@@ -65,7 +85,7 @@ const loadDashboardData = async () => {
         }
       });
 
-      setRecentActivities(sortedActivities);
+      setAllActivities(activities);
       
     } catch (err) {
       setError(err.message || "Failed to load dashboard data");
@@ -117,7 +137,7 @@ const loadDashboardData = async () => {
         <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-white/5 rounded-full"></div>
       </div>
 
-{/* Stats Cards */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Total Contacts"
@@ -137,11 +157,11 @@ const loadDashboardData = async () => {
         
         <StatsCard
           title="Recent Activities"
-          value={recentActivities.length}
+          value={filteredActivities.length}
           icon="Activity"
           trend={{
             type: "neutral",
-            value: "Last 10 activities"
+            value: startDate || endDate ? "Filtered results" : "Last 10 activities"
           }}
         />
 
@@ -268,16 +288,32 @@ const loadDashboardData = async () => {
         </div>
       </div>
 
-{/* Recent Activities */}
+      {/* Recent Activities */}
       <div className="bg-white rounded-xl border border-gray-100 p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-gray-900">Recent Activities</h3>
           <ApperIcon name="Clock" size={20} className="text-gray-400" />
         </div>
         
+        {/* Activity Filter */}
+        <div className="mb-6">
+          <DateRangeFilter
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
+            onClear={() => {
+              setStartDate("");
+              setEndDate("");
+            }}
+            label="Filter activities by date"
+            className="max-w-lg"
+          />
+        </div>
+        
         <div className="space-y-3">
-          {recentActivities.length > 0 ? (
-            recentActivities.map((activity) => {
+          {filteredActivities.length > 0 ? (
+            filteredActivities.map((activity) => {
               const activityColors = {
                 call: { bg: 'bg-blue-50', dot: 'bg-blue-500', text: 'text-blue-600' },
                 email: { bg: 'bg-green-50', dot: 'bg-green-500', text: 'text-green-600' },
@@ -312,8 +348,12 @@ const loadDashboardData = async () => {
             <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
               <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">No recent activities</p>
-                <p className="text-xs text-gray-600">Activities will appear here once created</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {startDate || endDate ? 'No activities found in selected date range' : 'No recent activities'}
+                </p>
+                <p className="text-xs text-gray-600">
+                  {startDate || endDate ? 'Try adjusting your date filter' : 'Activities will appear here once created'}
+                </p>
               </div>
               <span className="text-xs text-gray-500">-</span>
             </div>

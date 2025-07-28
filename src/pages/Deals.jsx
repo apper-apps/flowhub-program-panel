@@ -1,19 +1,20 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { toast } from 'react-toastify';
-import * as dealService from '@/services/api/dealService';
-import { contactService } from '@/services/api/contactService';
-import { companyService } from '@/services/api/companyService';
-import Loading from '@/components/ui/Loading';
-import Error from '@/components/ui/Error';
-import Empty from '@/components/ui/Empty';
-import Button from '@/components/atoms/Button';
-import SearchInput from '@/components/atoms/SearchInput';
-import Select from '@/components/atoms/Select';
-import Modal from '@/components/molecules/Modal';
-import DealForm from '@/components/organisms/DealForm';
-import ApperIcon from '@/components/ApperIcon';
-import { cn } from '@/utils/cn';
+import React, { useEffect, useMemo, useState } from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { toast } from "react-toastify";
+import { contactService } from "@/services/api/contactService";
+import { companyService } from "@/services/api/companyService";
+import * as dealService from "@/services/api/dealService";
+import ApperIcon from "@/components/ApperIcon";
+import Modal from "@/components/molecules/Modal";
+import DealForm from "@/components/organisms/DealForm";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Button from "@/components/atoms/Button";
+import Select from "@/components/atoms/Select";
+import SearchInput from "@/components/atoms/SearchInput";
+import DateRangeFilter from "@/components/atoms/DateRangeFilter";
+import { cn } from "@/utils/cn";
 
 const Deals = () => {
 const [deals, setDeals] = useState([]);
@@ -24,13 +25,14 @@ const [deals, setDeals] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [stageFilter, setStageFilter] = useState('');
   const [companyFilter, setCompanyFilter] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showModal, setShowModal] = useState(false);
   const [editingDeal, setEditingDeal] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [viewMode, setViewMode] = useState('kanban');
-
   const stageOptions = [
     { value: '', label: 'All Stages' },
     { value: 'Prospecting', label: 'Prospecting' },
@@ -81,7 +83,18 @@ const filteredAndSortedDeals = useMemo(() => {
       const matchesStage = !stageFilter || deal.stage === stageFilter;
       const matchesCompany = !companyFilter || deal.companyId?.toString() === companyFilter;
       
-      return matchesSearch && matchesStage && matchesCompany;
+      // Date range filter
+      let matchesDateRange = true;
+      if (startDate || endDate) {
+        const dealDate = new Date(deal.createdAt);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate + 'T23:59:59') : null;
+        
+        if (start && dealDate < start) matchesDateRange = false;
+        if (end && dealDate > end) matchesDateRange = false;
+      }
+      
+      return matchesSearch && matchesStage && matchesCompany && matchesDateRange;
     });
 
     return filtered.sort((a, b) => {
@@ -105,7 +118,7 @@ const filteredAndSortedDeals = useMemo(() => {
         return aValue < bValue ? 1 : -1;
       }
     });
-  }, [deals, searchQuery, stageFilter, companyFilter, sortBy, sortOrder]);
+  }, [deals, searchQuery, stageFilter, companyFilter, startDate, endDate, sortBy, sortOrder]);
 
   const dealsByStage = useMemo(() => {
     const stages = ['Prospecting', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
@@ -366,32 +379,45 @@ return (
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="lg:col-span-2">
-            <SearchInput
-              placeholder="Search deals..."
-              value={searchQuery}
-              onChange={setSearchQuery}
+<div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="lg:col-span-2">
+              <SearchInput
+                placeholder="Search deals..."
+                value={searchQuery}
+                onChange={setSearchQuery}
+              />
+            </div>
+            <Select
+              value={stageFilter}
+              onChange={setStageFilter}
+              options={stageOptions}
+              placeholder="Filter by stage"
+            />
+            <Select
+              value={companyFilter}
+              onChange={setCompanyFilter}
+              options={[
+                { value: '', label: 'All Companies' },
+                ...companies.map(company => ({
+                  value: company.Id.toString(),
+                  label: company.name
+                }))
+              ]}
+              placeholder="Filter by company"
             />
           </div>
-          <Select
-            value={stageFilter}
-            onChange={setStageFilter}
-            options={stageOptions}
-            placeholder="Filter by stage"
-          />
-          <Select
-            value={companyFilter}
-            onChange={setCompanyFilter}
-            options={[
-              { value: '', label: 'All Companies' },
-              ...companies.map(company => ({
-                value: company.Id.toString(),
-                label: company.name
-              }))
-            ]}
-            placeholder="Filter by company"
+          <DateRangeFilter
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
+            onClear={() => {
+              setStartDate('');
+              setEndDate('');
+            }}
+            label="Filter by creation date"
           />
         </div>
       </div>

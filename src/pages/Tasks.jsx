@@ -1,35 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import Button from '@/components/atoms/Button';
-import SearchInput from '@/components/atoms/SearchInput';
-import Select from '@/components/atoms/Select';
-import ApperIcon from '@/components/ApperIcon';
-import Loading from '@/components/ui/Loading';
-import Error from '@/components/ui/Error';
-import Empty from '@/components/ui/Empty';
-import Modal from '@/components/molecules/Modal';
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { taskService } from "@/services/api/taskService";
+import { create, getAll, update } from "@/services/api/dealService";
+import ApperIcon from "@/components/ApperIcon";
+import Modal from "@/components/molecules/Modal";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Button from "@/components/atoms/Button";
+import Select from "@/components/atoms/Select";
+import SearchInput from "@/components/atoms/SearchInput";
+import DateRangeFilter from "@/components/atoms/DateRangeFilter";
 
 const Tasks = () => {
-  const [tasks, setTasks] = useState([]);
+const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [sortBy, setSortBy] = useState('dueDate');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-
   useEffect(() => {
     loadTasks();
   }, []);
 
-  useEffect(() => {
+useEffect(() => {
     filterTasks();
-  }, [tasks, searchTerm, statusFilter, priorityFilter, sortBy]);
+  }, [tasks, searchTerm, statusFilter, priorityFilter, startDate, endDate, sortBy]);
 
   const loadTasks = async () => {
     try {
@@ -46,7 +50,7 @@ const Tasks = () => {
     }
   };
 
-  const filterTasks = () => {
+const filterTasks = () => {
     let filtered = [...tasks];
 
     // Search filter
@@ -65,6 +69,19 @@ const Tasks = () => {
     // Priority filter
     if (priorityFilter) {
       filtered = filtered.filter(task => task.priority === priorityFilter);
+    }
+
+    // Date range filter
+    if (startDate || endDate) {
+      filtered = filtered.filter(task => {
+        const taskDate = new Date(task.dueDate);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate + 'T23:59:59') : null;
+        
+        if (start && taskDate < start) return false;
+        if (end && taskDate > end) return false;
+        return true;
+      });
     }
 
     // Sort
@@ -201,41 +218,54 @@ const Tasks = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg border border-gray-200">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <SearchInput
-            placeholder="Search tasks..."
-            value={searchTerm}
-            onChange={setSearchTerm}
-          />
-          <Select
-            value={statusFilter}
-            onChange={setStatusFilter}
-            options={[
-              { value: '', label: 'All Status' },
-              { value: 'Pending', label: 'Pending' },
-              { value: 'Completed', label: 'Completed' }
-            ]}
-          />
-          <Select
-            value={priorityFilter}
-            onChange={setPriorityFilter}
-            options={[
-              { value: '', label: 'All Priority' },
-              { value: 'High', label: 'High Priority' },
-              { value: 'Medium', label: 'Medium Priority' },
-              { value: 'Low', label: 'Low Priority' }
-            ]}
-          />
-          <Select
-            value={sortBy}
-            onChange={setSortBy}
-            options={[
-              { value: 'dueDate', label: 'Sort by Due Date' },
-              { value: 'priority', label: 'Sort by Priority' },
-              { value: 'status', label: 'Sort by Status' },
-              { value: 'title', label: 'Sort by Title' }
-            ]}
+<div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <SearchInput
+              placeholder="Search tasks..."
+              value={searchTerm}
+              onChange={setSearchTerm}
+            />
+            <Select
+              value={statusFilter}
+              onChange={setStatusFilter}
+              options={[
+                { value: '', label: 'All Status' },
+                { value: 'Pending', label: 'Pending' },
+                { value: 'Completed', label: 'Completed' }
+              ]}
+            />
+            <Select
+              value={priorityFilter}
+              onChange={setPriorityFilter}
+              options={[
+                { value: '', label: 'All Priority' },
+                { value: 'High', label: 'High Priority' },
+                { value: 'Medium', label: 'Medium Priority' },
+                { value: 'Low', label: 'Low Priority' }
+              ]}
+            />
+            <Select
+              value={sortBy}
+              onChange={setSortBy}
+              options={[
+                { value: 'dueDate', label: 'Sort by Due Date' },
+                { value: 'priority', label: 'Sort by Priority' },
+                { value: 'status', label: 'Sort by Status' },
+                { value: 'title', label: 'Sort by Title' }
+              ]}
+            />
+          </div>
+          <DateRangeFilter
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
+            onClear={() => {
+              setStartDate('');
+              setEndDate('');
+            }}
+            label="Filter by due date range"
           />
         </div>
       </div>

@@ -1,10 +1,14 @@
-import React, { useState, useMemo } from "react";
-import SearchInput from "@/components/atoms/SearchInput";
-import Button from "@/components/atoms/Button";
+import React, { useMemo, useState } from "react";
 import ApperIcon from "@/components/ApperIcon";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
+import Button from "@/components/atoms/Button";
+import Select from "@/components/atoms/Select";
+import SearchInput from "@/components/atoms/SearchInput";
+import DateRangeFilter from "@/components/atoms/DateRangeFilter";
+import Companies from "@/pages/Companies";
+import Contacts from "@/pages/Contacts";
 const CompanyList = ({ 
   companies = [], 
   contacts = [],
@@ -14,19 +18,54 @@ const CompanyList = ({
   onAddCompany,
   onEditCompany 
 }) => {
-  const [searchQuery, setSearchQuery] = useState("");
+const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-const filteredCompanies = useMemo(() => {
-    if (!searchQuery.trim()) return companies;
+const statusOptions = [
+    { value: "", label: "All Statuses" },
+    { value: "Active", label: "Active" },
+    { value: "Inactive", label: "Inactive" },
+    { value: "Prospect", label: "Prospect" }
+  ];
+
+  const filteredCompanies = useMemo(() => {
+    let filtered = companies;
     
-    const query = searchQuery.toLowerCase();
-    return companies.filter(company => 
-      company.name.toLowerCase().includes(query) ||
-      company.industry.toLowerCase().includes(query) ||
-      (company.website && company.website.toLowerCase().includes(query)) ||
-      (company.phone && company.phone.toLowerCase().includes(query))
-    );
-}, [companies, searchQuery]);
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(company => 
+        company.name.toLowerCase().includes(query) ||
+        company.industry.toLowerCase().includes(query) ||
+        (company.website && company.website.toLowerCase().includes(query)) ||
+        (company.phone && company.phone.toLowerCase().includes(query))
+      );
+    }
+    
+    // Filter by status
+    if (statusFilter) {
+      filtered = filtered.filter(company => 
+        (company.status || 'Active') === statusFilter
+      );
+    }
+    
+    // Filter by date range
+    if (startDate || endDate) {
+      filtered = filtered.filter(company => {
+        const companyDate = new Date(company.createdAt || company.foundedDate);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate + 'T23:59:59') : null;
+        
+        if (start && companyDate < start) return false;
+        if (end && companyDate > end) return false;
+        return true;
+      });
+    }
+    
+    return filtered;
+  }, [companies, searchQuery, statusFilter, startDate, endDate]);
 
   const getContactCount = (companyId) => {
     return contacts.filter(contact => contact.companyId === companyId).length;
@@ -72,12 +111,35 @@ const filteredCompanies = useMemo(() => {
         </Button>
       </div>
 
-      {/* Search */}
-      <div className="w-full max-w-md">
-        <SearchInput
-          placeholder="Search companies..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+{/* Search and Filters */}
+      <div className="space-y-4 w-full max-w-4xl">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <SearchInput
+              placeholder="Search companies..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="w-full sm:w-48">
+            <Select
+              placeholder="Filter by status..."
+              options={statusOptions}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            />
+          </div>
+        </div>
+        <DateRangeFilter
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
+          onClear={() => {
+            setStartDate("");
+            setEndDate("");
+          }}
+          label="Filter by creation date"
         />
       </div>
 
