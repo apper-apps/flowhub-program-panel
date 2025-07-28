@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { contactService } from '@/services/api/contactService'
 import { companyService } from '@/services/api/companyService'
+import { exportService } from '@/services/exportService'
 import Modal from '@/components/molecules/Modal'
 import ContactDetail from '@/components/organisms/ContactDetail'
 import ContactList from '@/components/organisms/ContactList'
@@ -74,17 +75,20 @@ const handleAddContact = async (contactData) => {
     }
 };
 
+  const handleExportContacts = (contactsToExport) => {
+    exportService.exportContacts(contactsToExport, companies);
+  };
+
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
     setSelectedContact(null);
   };
-
   useEffect(() => {
     loadContacts();
   }, []);
 
   return (
-    <>
+<>
       <ContactList
         contacts={contacts}
         companies={companies}
@@ -93,6 +97,7 @@ const handleAddContact = async (contactData) => {
         onRetry={loadContacts}
         onAddContact={() => setIsAddModalOpen(true)}
         onContactSelect={handleContactSelect}
+        onExportContacts={handleExportContacts}
       />
 
       <Modal

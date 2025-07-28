@@ -16,7 +16,8 @@ const ContactList = ({
   error = null, 
   onRetry,
   onAddContact,
-  onContactSelect 
+  onContactSelect,
+  onExportContacts
 }) => {
 const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -115,17 +116,27 @@ const filteredContacts = useMemo(() => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+{/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Contacts</h2>
           <p className="text-gray-600">Manage your customer contacts</p>
         </div>
         
-        <Button onClick={onAddContact} variant="primary">
-          <ApperIcon name="Plus" size={16} className="mr-2" />
-          Add Contact
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => onExportContacts && onExportContacts(filteredContacts)} 
+            variant="outline"
+            className="sm:w-auto"
+          >
+            <ApperIcon name="Download" size={16} className="mr-2" />
+            Export CSV
+          </Button>
+          <Button onClick={onAddContact} variant="primary">
+            <ApperIcon name="Plus" size={16} className="mr-2" />
+            Add Contact
+          </Button>
+        </div>
       </div>
 
 {/* Search and Filters */}

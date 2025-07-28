@@ -16,7 +16,8 @@ const CompanyList = ({
   error = null, 
   onRetry,
   onAddCompany,
-  onEditCompany 
+  onEditCompany,
+  onExportCompanies
 }) => {
 const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -97,7 +98,7 @@ const statusOptions = [
   }
 
   return (
-    <div className="space-y-6">
+<div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -105,10 +106,20 @@ const statusOptions = [
           <p className="text-gray-600">Manage your business relationships</p>
         </div>
         
-        <Button onClick={onAddCompany} variant="primary">
-          <ApperIcon name="Plus" size={16} className="mr-2" />
-          Add Company
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => onExportCompanies && onExportCompanies(filteredCompanies)} 
+            variant="outline"
+            className="sm:w-auto"
+          >
+            <ApperIcon name="Download" size={16} className="mr-2" />
+            Export CSV
+          </Button>
+          <Button onClick={onAddCompany} variant="primary">
+            <ApperIcon name="Plus" size={16} className="mr-2" />
+            Add Company
+          </Button>
+        </div>
       </div>
 
 {/* Search and Filters */}

@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { contactService } from "@/services/api/contactService";
 import { companyService } from "@/services/api/companyService";
 import * as dealService from "@/services/api/dealService";
+import { exportService } from "@/services/exportService";
 import ApperIcon from "@/components/ApperIcon";
 import Modal from "@/components/molecules/Modal";
 import DealForm from "@/components/organisms/DealForm";
@@ -15,7 +16,6 @@ import Select from "@/components/atoms/Select";
 import SearchInput from "@/components/atoms/SearchInput";
 import DateRangeFilter from "@/components/atoms/DateRangeFilter";
 import { cn } from "@/utils/cn";
-
 const Deals = () => {
 const [deals, setDeals] = useState([]);
   const [contacts, setContacts] = useState([]);
@@ -192,7 +192,7 @@ const handleCreateDeal = () => {
     }
   };
 
-  const getContactName = (contactId) => {
+const getContactName = (contactId) => {
     const contact = contacts.find(c => c.Id === contactId);
     return contact ? contact.name : 'Unknown Contact';
   };
@@ -200,6 +200,10 @@ const handleCreateDeal = () => {
   const getCompanyName = (companyId) => {
     const company = companies.find(c => c.Id === companyId);
     return company ? company.name : 'No Company';
+  };
+
+  const handleExportDeals = () => {
+    exportService.exportDeals(filteredAndSortedDeals, contacts, companies);
   };
 
 const getStageColor = (stage) => {
@@ -212,7 +216,6 @@ const getStageColor = (stage) => {
     };
     return colors[stage] || 'bg-gray-100 text-gray-800 border-gray-200';
   };
-
   const getStageHeaderColor = (stage) => {
     const colors = {
       'Prospecting': 'bg-blue-50 border-blue-200',
@@ -370,7 +373,15 @@ return (
           <h1 className="text-2xl font-bold text-gray-900">Deals Pipeline</h1>
           <p className="text-gray-600">Manage your sales pipeline and track opportunities</p>
         </div>
-        <div className="flex gap-2">
+<div className="flex gap-2">
+          <Button 
+            onClick={handleExportDeals} 
+            variant="outline"
+            className="w-full sm:w-auto"
+          >
+            <ApperIcon name="Download" size={16} />
+            Export CSV
+          </Button>
           <Button onClick={handleCreateDeal} className="w-full sm:w-auto">
             <ApperIcon name="Plus" size={20} />
             Add Deal

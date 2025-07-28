@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { contactService } from "@/services/api/contactService";
 import { companyService } from "@/services/api/companyService";
+import { exportService } from "@/services/exportService";
 import Modal from "@/components/molecules/Modal";
 import CompanyList from "@/components/organisms/CompanyList";
 import CompanyForm from "@/components/organisms/CompanyForm";
@@ -32,7 +33,6 @@ const [companiesData, contactsData] = await Promise.all([
       setLoading(false);
     }
   };
-
 const handleAddCompany = async (companyData) => {
     try {
       const newCompany = await companyService.create(companyData);
@@ -44,6 +44,10 @@ const handleAddCompany = async (companyData) => {
       toast.error(err.message || "Failed to add company");
       // Don't close modal on error - let user try again
     }
+  };
+
+  const handleExportCompanies = (companiesToExport) => {
+    exportService.exportCompanies(companiesToExport, contacts);
   };
 
   const handleEditCompany = (company) => {
@@ -81,6 +85,7 @@ const handleUpdateCompany = async (companyData) => {
         onRetry={loadCompanies}
         onAddCompany={() => setIsAddModalOpen(true)}
         onEditCompany={handleEditCompany}
+        onExportCompanies={handleExportCompanies}
       />
 
 <Modal
