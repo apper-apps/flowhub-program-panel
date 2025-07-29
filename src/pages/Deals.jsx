@@ -201,36 +201,54 @@ try {
   };
 
 const getContactName = (contactId) => {
+    // Handle null/undefined values first
+    if (!contactId) {
+      return 'Unknown Contact';
+    }
+    
     // With referenceField configured, contactId should now be the contact name directly
-    if (contactId && typeof contactId === 'string') {
+    if (typeof contactId === 'string') {
       return contactId;
     }
     
     // Handle legacy lookup objects during transition
-    if (contactId && typeof contactId === 'object' && contactId.Name) {
-      return contactId.Name;
+    if (typeof contactId === 'object' && contactId !== null && contactId.Name) {
+      return String(contactId.Name);
     }
     
     // Fallback to finding in contacts array for numeric IDs
-    const contact = contacts.find(c => c.Id === contactId);
-    return contact ? contact.Name || contact.name : 'Unknown Contact';
+    if (typeof contactId === 'number') {
+      const contact = contacts.find(c => c.Id === contactId);
+      return contact ? String(contact.Name || contact.name) : 'Unknown Contact';
+    }
+    
+    return 'Unknown Contact';
   };
 const getCompanyName = (companyId) => {
+    // Handle null/undefined values first
+    if (!companyId) {
+      return 'No Company';
+    }
+    
     // With referenceField configured, companyId should now be the company name directly
-    if (companyId && typeof companyId === 'string') {
+    if (typeof companyId === 'string') {
       return companyId;
     }
     
     // Handle legacy lookup objects during transition
-    if (companyId && typeof companyId === 'object' && companyId.Name) {
-      return companyId.Name;
+    if (typeof companyId === 'object' && companyId !== null && companyId.Name) {
+      return String(companyId.Name);
     }
     
     // Fallback to finding in companies array for numeric IDs
-    const company = companies.find(c => c.Id === companyId);
-    if (!company) return 'No Company';
-    // Handle both lookup object structure {Id, Name} and direct name access
-    return company.Name || company.name || 'No Company';
+    if (typeof companyId === 'number') {
+      const company = companies.find(c => c.Id === companyId);
+      if (!company) return 'No Company';
+      // Handle both lookup object structure {Id, Name} and direct name access
+      return String(company.Name || company.name || 'No Company');
+    }
+    
+    return 'No Company';
   };
 
   const handleExportDeals = () => {

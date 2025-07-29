@@ -321,10 +321,11 @@ return (
                       
 {(() => {
                         const companyName = getCompanyName(contact.companyId);
-                        return companyName && companyName !== "—" && (
+                        const companyNameStr = String(companyName || '');
+                        return companyNameStr && companyNameStr !== "—" && (
                           <div className="flex items-center text-sm text-gray-600">
                             <ApperIcon name="Building2" size={14} className="mr-2 flex-shrink-0" />
-                            <span className="truncate">{companyName}</span>
+                            <span className="truncate">{companyNameStr}</span>
                           </div>
                         );
                       })()}
