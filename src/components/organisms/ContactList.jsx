@@ -84,22 +84,28 @@ const filteredContacts = useMemo(() => {
   };
 
 const getCompanyName = (companyId) => {
+    // Handle null/undefined values first
+    if (!companyId) {
+      return "—";
+    }
+    
     // With referenceField configured, companyId should now be the company name directly
-    if (companyId && typeof companyId === 'string') {
+    if (typeof companyId === 'string') {
       return companyId;
     }
     
     // Handle legacy lookup objects during transition
-    if (companyId && typeof companyId === 'object' && companyId.Name) {
-      return companyId.Name;
+    if (typeof companyId === 'object' && companyId !== null && companyId.Name) {
+      return String(companyId.Name);
     }
     
     // Handle numeric ID by finding in companies array (fallback)
-    if (companyId && typeof companyId === 'number') {
+    if (typeof companyId === 'number') {
       const company = companies.find(c => c.Id === companyId);
-      return company ? company.Name : "—";
+      return company ? String(company.Name) : "—";
     }
     
+    // Ensure we always return a string
     return "—";
   };
   if (loading) {
@@ -313,12 +319,15 @@ return (
                         <span>{contact.phone}</span>
                       </div>
                       
-                      {getCompanyName(contact.companyId) && (
-                        <div className="flex items-center text-sm text-gray-600">
-                          <ApperIcon name="Building2" size={14} className="mr-2 flex-shrink-0" />
-                          <span className="truncate">{getCompanyName(contact.companyId)}</span>
-                        </div>
-                      )}
+{(() => {
+                        const companyName = getCompanyName(contact.companyId);
+                        return companyName && companyName !== "—" && (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <ApperIcon name="Building2" size={14} className="mr-2 flex-shrink-0" />
+                            <span className="truncate">{companyName}</span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>
